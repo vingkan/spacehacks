@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpaceHacks</title>
+		<link rel="stylesheet" type="text/css" href="style/reset.css">
+		<link rel="stylesheet/less" type="text/css" href="style/readout.less">
+		<script type="text/javascript" src="lib/less.min.js"></script>
+		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
+		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+	</head>
+
+	<body>
+
+		<textarea id="sender" placeholder="Write messages here."></textarea>
+
+		<script type="text/javascript" src="lib/infra.js"></script>
+		<script type="text/javascript" src="lib/main.js"></script>
+
+		<script type="text/javascript">
+
+			var sender = document.getElementById('sender');
+			sender.addEventListener('keypress', function(e){
+				if(e.keyCode === 13){
+					MissionLink.sendMessage(sender.value);
+				}
+			});
+
+		</script>
+		
+	</body>
+</html>
