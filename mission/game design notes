@@ -1,0 +1,121 @@
+spacehacks!
+
+input: a number of buttons, differentiated, and MUTABLE!
+
+output: a display with which we can do anything
+
+attributes are not bolded, functions are bolded
+
+ship class
+	nav system
+		active — boolean
+		calibrated — boolean
+		remaining power — PowerCore
+
+	life sys
+		food output — int (0-100, empty-full)
+		remaining fertilizer — int (0-100, empty-full)
+		remaining power — PowerCore
+		grow (Powercore, Fertilizer) — void
+			takes energy from power core and fertilizer to 			produce a certain amount of soylent
+
+	disposal (implemented)
+		waste — int (0-100, empty-full)
+		water — int (0-100, empty-full)
+		soylent — int (0-100, empty-full)
+		fertilizer — int (0-100, empty-full)
+		inbetween — int (0-100, empty-full)
+		// water + soylent can only total to 100, waste + 			// inbetween can only total to 100, fertilizer can go 		// up to 100 by itself
+		remaining power — PowerCore
+		filter (Powercore) — void
+			decrease waste by .25 factor and increases 				inbetween, then decrease energy level in 				powercore by factor of .75
+		distill (Powercore) — void
+			decrease waste by .75 factor and increases 				water, then decrease energy level in 					powercore by factor of .75
+		process (Powercore) — void
+			decrease inbetween by a 1.0 factor and 				increase fertilizer by 1.0 factor, then decrease 			energy level by 1.0 factor
+	propulsion
+		active? — boolean (if false, power-draw = 0, else…)
+		warp factor — int (0-10, not moving-lightspeed)
+		power-draw — int (0-10, no draw-maximum draw)
+		efficiency — int (0-1, initialized @ 0.5, can use .1 			(efficient)-1 (inefficient)
+		remaining power — PowerCore
+
+powercore class
+	volatility — chance of sys breaking down every 10 		minutes
+	remaining energy — how long sys can stay running
+	type — which ship sys to plug into
+
+auto-nav
+—> calibration — trajectory is incorrect, how do we re-align 	the ship?
+
+	instruction manual has formulas to re-aligning trajectory
+	engineer would tell command that there’s something		wrong and command would try to help them
+	spherical coords, estimate —> iterative process
+
+	guesses (X, Y, Z) == (A, B, C) - win
+
+	objective is to perfect trajectory estimate by matching 	the “values”
+
+	the formula in the instructions is 1-1, so that the game 	code translates the engineer’s input back into a 3D 		vector, and then displays the 3D vector if is an incorrect 	estimate
+
+	cantor’s
+
+—> navigation sys fail error : reboot process, how do we 		restart the nav system?
+
+	series of pulling out and re-arranging fuses?
+
+
+
+life support
+—> growing plants
+
+ion drive
+
+mass drivers — propulsion
+—> top warp — tier-based achievement (while user is not busy keeping ship running)
+
+	series of puzzles to solve in order to either increase 		energy efficiency of the drivers or increase the power 		output of the drivers to reach destination with greater 		fuel left for return journey or to reach destination faster 	or both :)
+
+	puzzles:
+
+	discrete reasoning:
+	—> correct sequence of electromagnets — can be 		randomized
+		electromagnets A, B, and C
+		command has certain instructions that say: 		“A must come first, B comes second” — one part 		of the statement is true and the other is false
+		“C must come first, A comes second” — one part 		of the statement is true and the other is false
+		sol: if A does not come first or B is not second, and  		C is not first or and A is not second, then the order 		is: C, B, A
+
+	—>
+disposal unit
+—> sanitation — to maintain a constant amount of water and food, we need to correctly process the waste (filter, distill, and purge (flush))
+
+	engineer has to relay the levels of “waste,” “fresh 		water,” “soylent,” “fertilizer,” and “in-between material”	to command and on certain thresholds of each variable 	given on the guide, the engineer is told to either filter, 		distill, and/or process in a certain order for a certain 		number of times
+
+	ex: we have 30% fresh water left, 20% soylent, and 50% 	waste. first we have to filter twice, which brings us to 		30% water, 20% soylent, 10% waste, and 40% in-			between material (doing these operations is taxing to 		energy levels); once we are at 40% in-between material, 	we distill to bring us to +30% water —> 60% water, 20% 	soylent, and 10% waste, and 10% in-between material. 	we then filter the last 10% of in-between material to 		achieve —> 60% water, 20% soylent, 10% waste, and 		10% fertilizer
+
+	function lifeSupport (freshWater, soylent, waste, fertilizer) {
+	this.freshWater = freshWater;
+	this.soylent = soylent;
+	this.waste = waste;
+	this.fertilizer = fertilizer;
+}
+	function SpaceShip (
+	filter: function(ship) {}
+
+	distill: function(ship) {}
+
+	purge: function(ship) {}
+
+
+power core
+—> replace energy source — the uranium fuel sources have different levels of volatility, remaining energy, and type (constant upkeep, sustenance gameplay)
+
+	to extract the correct power core, series of head-			movements are required (almost like key-combination)
+
+	command has to communicate with the engineer to 		select which power core is best based on current 		spaceship vitality and usage case, command will help 		engineer extract correct fuel source and how to handle/	insert
+
+	ex: volatility — engineer must be very precise and 		gentle in movements
+
+	ex: remaining energy — which power core is best to 		use? less remaining life in fuel source = switch more 		often, more = more volatile
+
+	ex: type — some fuel sources are best for power life 		support systems, some are best for powering the ion-		drive for warping
