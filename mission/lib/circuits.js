@@ -86,8 +86,8 @@ var circuit = {
 	},
 	led: 'red',
 	wires: [
-		{i: 'a', f: 'c', broken: false},
-		{i: 'c', f: 'b', broken: true}
+		{node1: 'a', node2: 'c', broken: false},
+		{node1: 'c', node2: 'b', broken: true}
 	]
 }
 
