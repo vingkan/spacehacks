@@ -28,7 +28,7 @@ ship class
 		// water + soylent can only total to 100, waste + 			// inbetween can only total to 100, fertilizer can go 		// up to 100 by itself
 		remaining power — PowerCore
 		filter (Powercore) — void
-			decrease waste by .25 factor and increases 				inbetween, then decrease energy level in 				powercore by factor of .75
+			decrease waste by .25 factor and increases 				inbetween, then decrease energy level in 				powercore by factor of .25
 		distill (Powercore) — void
 			decrease waste by .75 factor and increases 				water, then decrease energy level in 					powercore by factor of .75
 		process (Powercore) — void
