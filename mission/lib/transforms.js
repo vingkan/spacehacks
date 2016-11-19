@@ -31,6 +31,17 @@ var TRANSFORMERS = {
 		return nMsg;
 	}
 
+	shuffleWords: function(msg) {
+		var words = msg.split(" ");
+		for (var i = words.length - 1; i > 0; i--) {
+			var rand = Math.floor(Math.random() * (i + 1));
+			var temp = words[i];
+			words[i] = words[rand];
+			words[rand] = temp;
+		}
+		return words.join(" ");
+	}
+
 	reverseWords: function(msg) {
 		msg.split("").reverse().join("").split(" ").reverse().join(" ");
 		return msg;
@@ -47,4 +58,6 @@ var TRANSFORMERS = {
 		}
 		return words.join(" ");
 	}
+
+
 }
