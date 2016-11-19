@@ -18,17 +18,17 @@ function convertToCartesian(rho, theta, phi) {
 }
 
 function convertToCantor(rho, theta, phi) {
-    var a = toCantor(rho, theta);
-    var b = toCantor(theta, phi);
-    var c = toCantor(phi, rho);
+    var a = toCantor(rho, theta / 10);
+    var b = toCantor(theta / 10, phi / 10);
+    var c = toCantor(phi / 10, rho);
     return {a: a, b: b, c: c};
 }
 
 // Converts formula output given by engineer to a 3D vector
 function convertToVector(a, b, c) {
     var rho = invertCantor(a).x;
-    var theta = invertCantor(b).x;
-    var phi = invertCantor(c).x;
+    var theta = invertCantor(b).x * 10;
+    var phi = invertCantor(c).x * 10;
     return {rho: rho, theta: theta, phi: phi};
 }
 
@@ -59,10 +59,12 @@ function checkAnswer(target, answer) {
 
 function run() {
     var target = {
-        rho: Math.floor(Math.random() * 100),
-        theta: Math.floor(Math.random() * 360),
-        phi: Math.floor(Math.random() * 180)
+        rho: Math.floor(Math.random() * 25),
+        theta: Math.floor(Math.random() * 36) * 10,
+        phi: Math.floor(Math.random() * 18) * 10
     }
+
+    console.log(target);
 
     var cartesian = convertToCartesian(target.rho, target.theta, target.phi);
     //drawBaseVector()
