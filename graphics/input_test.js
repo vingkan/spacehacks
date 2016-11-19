@@ -27,6 +27,17 @@ var DEBUG = (m_version.type() === "DEBUG");
 var _previous_selected_obj = null;
 var _cam_waiting_handle = null;
 
+var config = {
+    apiKey: "AIzaSyBRwFZhOh7Yt_kfKZVKRCHwvn92gX0EGew",
+    authDomain: "spacehacks-58330.firebaseapp.com",
+    databaseURL: "https://spacehacks-58330.firebaseio.com",
+    storageBucket: "spacehacks-58330.appspot.com",
+    messagingSenderId: "559373315205"
+};
+
+var SHFirebase = firebase.initializeApp(config);
+var db = SHFirebase.database();
+
 /**
  * export the method to initialize the app (called at the bottom of this file)
  */
@@ -141,11 +152,16 @@ function start_video() {
         var update_canvas = function() {
         	//context.change_image(obj, "Texture.001", "blendFiles/_texture/screen.png");
         	//context.play_video(video);
-        var dataURL = 'data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw AAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapyuvUUlvONmOZtfzgFz ByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSp a/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJl ZeGl9i2icVqaNVailT6F5iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uis F81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97Vriy/Xl4/f1cf5VWzXyym7PH hhx4dbgYKAAA7';
+
+        db.ref('modules/circuits/data-uri').on('value', function(snap){
+
+        });
+
+        var dataURI = snap.val() || 'data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw AAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapyuvUUlvONmOZtfzgFz ByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSp a/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJl ZeGl9i2icVqaNVailT6F5iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uis F81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97Vriy/Xl4/f1cf5VWzXyym7PH hhx4dbgYKAAA7';
 
         var imgObj = new Image();
         imgObj.crossOrigin = 'anonymous';
-        imgObj.src = dataURL;
+        imgObj.src = dataURI;
         imgObj.onload = function(){
             //ctx.drawImage(this, 0, 0);
             //ctx.drawImage(imgObj, 0, 0, 200, 200, 0, 0, ctx.canvas.width, ctx.canvas.height);
