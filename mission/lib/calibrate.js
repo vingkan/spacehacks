@@ -1,3 +1,22 @@
+Math.radians = function(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+Math.degrees = function(radians) {
+    return radians * 180 / Math.PI;
+}
+
+function areEqualVectors(v1, v2) {
+    return v1.rho === v2.rho && v1.theta === v2.theta && v1.phi === v2.phi;
+}
+
+function convertToCartesian(rho, theta, phi) {
+    var x = rho * Math.cos(Math.radians(theta)) * Math.sin(Math.radians(phi));
+    var y = rho * Math.sin(Math.radians(theta)) * Math.sin(Math.radians(phi));
+    var z = rho * Math.cos(Math.radians(phi));
+    return {x: x, y: y, z: z};
+}
+
 function convertToCantor(rho, theta, phi) {
     var a = toCantor(rho, theta);
     var b = toCantor(theta, phi);
@@ -7,9 +26,9 @@ function convertToCantor(rho, theta, phi) {
 
 // Converts formula output given by engineer to a 3D vector
 function convertToVector(a, b, c) {
-    var rho = invertCantor(a)['x'];
-    var theta = invertCantor(b)['x'];
-    var phi = invertCantor(c)['x'];
+    var rho = invertCantor(a).x;
+    var theta = invertCantor(b).x;
+    var phi = invertCantor(c).x;
     return {rho: rho, theta: theta, phi: phi};
 }
 
@@ -26,12 +45,66 @@ function invertCantor(z) {
     return {x: x, y: y};
 }
 
-// var vector = {
-//     rho: 30,
-//     theta: 2,
-//     phi: 30
-// };
-// console.log('Vector: ', vector);
-// var cantor = convertToCantor(vector['rho'], vector['theta'], vector['phi']);
-// console.log('Cantor: ', cantor);
-// console.log('Verify: ', convertToVector(cantor['a'], cantor['b'], cantor['c']));
+function checkAnswer(target, answer) {
+    var estimatedVector = convertToVector(answer.a, answer.b, answer.c);
+    if (areEqualVectors(estimatedVector, target)) {
+        console.log("YOU WIN!");
+        MissionLink.unsync();
+    }
+    else {
+        var cartesian = convertToCartesian(estimatedVector.rho, estimatedVector.theta, estimatedVector.phi);
+        console.log('Drawing red: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
+    }
+}
+
+function run() {
+    var target = {
+        rho: Math.floor(Math.random() * 100),
+        theta: Math.floor(Math.random() * 360),
+        phi: Math.floor(Math.random() * 180)
+    }
+
+    var cartesian = convertToCartesian(target.rho, target.theta, target.phi);
+    //drawBaseVector()
+    console.log('Drawing black: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
+
+    var answer = {
+        a: undefined,
+        b: undefined,
+        c: undefined
+    }
+
+    var currentInputNumber = 0;
+
+    MissionLink.sync();
+
+    MissionLink.alphaCallback = function(data) {
+        currentInputNumber += 1;
+    }
+
+    MissionLink.betaCallback = function(data) {
+        currentInputNumber *= 10;
+    }
+
+    MissionLink.gammaCallback = function(data) {
+        if (answer.a === undefined) {
+            answer.a = currentInputNumber;
+        }
+        else if (answer.b === undefined) {
+            answer.b = currentInputNumber;
+        }
+        else if (answer.c === undefined) {
+            answer.c = currentInputNumber;
+            checkAnswer(target, answer);
+            answer = {
+                a: undefined,
+                b: undefined,
+                c: undefined
+            }
+        }
+
+        currentInputNumber = 0;
+    }
+}
+
+run();
