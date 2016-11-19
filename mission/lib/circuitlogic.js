@@ -3,8 +3,8 @@ function getPossibleEdges(nNodes) {
     nodes = nodes.slice(0, nNodes);
 
     var edges = [];
-    for (int i = 0; i < nodes.length - 1; i++) {
-        for (int j = i + 1; j < nodes.length; j++) {
+    for (var i = 0; i < nodes.length - 1; i++) {
+        for (var j = i + 1; j < nodes.length; j++) {
             edges.push({
                 node1: nodes[i],
                 node2: nodes[j]
@@ -21,7 +21,7 @@ function generateCircuit() {
     // Randomly choose wires
     var possibleEdges = getPossibleEdges(nNodes);
     var edges = [];
-    for (int i = 0; i < possibleEdges.length; i++) {
+    for (var i = 0; i < possibleEdges.length; i++) {
         if (Math.random >= 0.5) {
             var edge = possibleEdges[i];
             edge.broken = Math.random >= 0.5 ? true : false;
@@ -50,17 +50,17 @@ function generateCircuit() {
 function getNeighbors(circuit) {
     var listOfNeighbors = {};
     for (var node in circuit.nodes) {
-        if (!circuit.nodes.node) {
+        if (!circuit.nodes[node]) {
             continue;
         }
         var neighbors = [];
-        for (int j = 0; j < circuit.wires.length; j++) {
+        for (var j = 0; j < circuit.wires.length; j++) {
             var wire = circuit.wires[j];
             if (wire.node1 === node && !wire.broken) {
-                neighbors.push(node2);
+                neighbors.push(wire.node2);
             }
             if (wire.node2 === node && !wire.broken) {
-                neighbors.push(node1);
+                neighbors.push(wire.node1);
             }
         }
         listOfNeighbors[node] = neighbors;
@@ -73,12 +73,15 @@ function countCycles(circuit) {
     var count = 0;
     var visited = [];
 
-    function visit(node) {
+    function visit(node, parent) {
         visited.push(node);
-        for (int = 0; i < listOfNeighbors[node]; i++) {
+        for (var i = 0; i < listOfNeighbors[node].length; i++) {
             var neighbor = listOfNeighbors[node][i];
+            if (neighbor === parent) {
+                continue;
+            }
             if (visited.indexOf(neighbor) === -1) {
-                visit(neighbor);
+                visit(neighbor, node);
             }
             else {
                 count++;
@@ -87,11 +90,34 @@ function countCycles(circuit) {
     }
 
     for (var node in circuit.nodes) {
-        if (visited.indexOf(node) === -1) {
-            visit(node);
+        if (circuit.nodes[node] && visited.indexOf(node) === -1) {
+            visit(node, undefined);
         }
     }
+
+    return count / 2;
 }
+
+var circuit = {
+	nodes: {
+		a: true,
+		b: true,
+		c: true,
+		d: true,
+		e: false
+	},
+	led: 'red',
+	wires: [
+		{node1: 'a', node2: 'c', broken: false},
+		{node1: 'c', node2: 'b', broken: false},
+        {node1: 'a', node2: 'b', broken: false},
+        {node1: 'a', node2: 'd', broken: false},
+        {node1: 'b', node2: 'd', broken: false}
+	]
+}
+
+console.log(countCycles(circuit));
+renderCircuit(circuit);
 
 function countNodes(circuit) {
     var count = 0;
@@ -105,7 +131,7 @@ function countNodes(circuit) {
 
 function countBrokenWires(circuit) {
     var count = 0;
-    for (int i = 0; i < circuit.wires; i++) {
+    for (var i = 0; i < circuit.wires; i++) {
         var wire = circuit.wires[i];
         if (wire.broken) {
             count++;
@@ -115,11 +141,11 @@ function countBrokenWires(circuit) {
 }
 
 function checkCircuit(target, circuit) {
-
+    //TODO
 }
 
 function checkCircuits(target, circuits) {
-    for (int i = 0; i < circuits.length; i++) {
+    for (var i = 0; i < circuits.length; i++) {
         if (checkCircuit(target, circuits[i])) {
             return true;
         }
@@ -130,7 +156,7 @@ function checkCircuits(target, circuits) {
 function generateCircuits(target, nCircuits) {
     while (true) {
         var circuits = [];
-        for (int i = 0; i < nCircuits; i++) {
+        for (var i = 0; i < nCircuits; i++) {
             circuits.push(generateCircuit);
         }
 
