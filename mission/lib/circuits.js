@@ -64,13 +64,14 @@ var NODE_POS = [
 	{x: 180, y: 350, node: false}
 ];
 
-drawLine([0, 50], [240, 50], 'white');
-drawLine([0, 150], [240, 150], 'white');
-drawLine([0, 250], [240, 250], 'white');
-drawLine([0, 350], [240, 350], 'white');
-
-drawLine([60, 0], [60, 400], 'white');
-drawLine([180, 0], [180, 400], 'white');
+var BASE_COLOR = '#20221f';
+var CIRCUIT_GREEN = '#0cdc56';
+var LED_COLOR = {
+	red: '#eb5c1f',
+	blue: '#0bebe5',
+	green: '#0cdc56',
+	yellow: '#d3eb37'
+}
 
 function renderCircuit(c){
 
@@ -79,7 +80,36 @@ function renderCircuit(c){
 		y: 0,
 		width: canvas.width,
 		height: canvas.height,
-	}, '#20221fff');
+	}, BASE_COLOR);
+
+	drawRect({
+		x: 98,
+		y: 78,
+		width: 44,
+		height: 44,
+	}, LED_COLOR[c.led]);
+
+	drawRect({
+		x: 100,
+		y: 80,
+		width: 40,
+		height: 40,
+	}, BASE_COLOR);
+
+	drawRect({
+		x: 110,
+		y: 90,
+		width: 20,
+		height: 20,
+	}, LED_COLOR[c.led]);
+
+	/*drawLine([0, 50], [240, 50], 'gray');
+	drawLine([0, 150], [240, 150], 'gray');
+	drawLine([0, 250], [240, 250], 'gray');
+	drawLine([0, 350], [240, 350], 'gray');
+
+	drawLine([60, 0], [60, 400], 'gray');
+	drawLine([180, 0], [180, 400], 'gray');*/
 
 	for(var n in c.nodes){
 		var node = c.nodes[n];
@@ -98,7 +128,34 @@ function renderCircuit(c){
 		var path = c.wires[w];
 		var i = c.nodes[path.node1].pos;
 		var f = c.nodes[path.node2].pos;
-		drawLine([i.x, i.y], [f.x, f.y], 'white');
+		var brk = {
+			x: 0,
+			y: 0	
+		}
+		if(i.x === f.x || i.y == f.y){
+			drawLine([i.x, i.y], [f.x, f.y], 'white');
+			if(i.x === f.x){
+				brk.x = i.x;
+				brk.y = (f.y - i.y) / 2;
+			}
+			else{
+				brk.x = (f.x - i.x) / 2;
+				brk.y = i.y;
+			}
+		}
+		else{
+			drawLine([i.x, i.y], [i.x, f.y], 'white');
+			drawLine([i.x, f.y], [f.x, f.y], 'white');
+			brk.x = i.x;
+			brk.y = f.y;
+		}
+		if(path.broken){
+			drawCircle({
+				x: brk.x,
+				y: brk.y,
+				r: 10
+			}, BASE_COLOR);
+		}
 	}
 
 	for(var n in c.nodes){
@@ -109,7 +166,7 @@ function renderCircuit(c){
 				x: pos.x,
 				y: pos.y,
 				r: 20
-			}, 'green'); //#0cdc56ff
+			}, CIRCUIT_GREEN);
 			drawText(n.toUpperCase(), [pos.x, pos.y], {
 				size: 20,
 				fill: 'white'
