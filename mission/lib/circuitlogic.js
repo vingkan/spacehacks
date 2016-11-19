@@ -95,7 +95,194 @@ function countCycles(circuit) {
         }
     }
 
-    return count / 2;
+    return Math.round(count / 2);
+}
+
+function countNodes(circuit) {
+    var count = 0;
+    for (var key in circuit.nodes) {
+        if (circuit.nodes[key]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function countCutWires(circuit) {
+    var count = 0;
+    for (var i = 0; i < circuit.wires.length; i++) {
+        var wire = circuit.wires[i];
+        if (wire.broken) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function checkCircuit(original, replacement) {
+    console.log(original);
+    console.log(replacement);
+    // The lights on the original board and the replacement board are both red
+    if (original.led === 'red' && replacement.led === 'red') {
+        // There are 4 or more nodes on the replacement board
+        if (countNodes(replacement) >= 4) {
+            // No wires are cut on the replacement board
+            if (countCutWires(replacement) === 0) {
+                // There are at least 2 cycles on the replacement
+                if (countCycles(replacement) >= 2) {
+                    return true;
+                }
+            }
+        }
+        // The number of nodes on both boards is between 3 and 5
+        if (countNodes(original) >= 3 && countNodes(original) <= 5 &&
+                countNodes(replacement) >= 3 && countNodes(replacement) <= 5) {
+            // At least 1 wire is cut on the replacement board
+            if (countCutWires(replacement) >= 1) {
+                // There is exactly 1 cycle on the replacement board
+                if (countCycles(replacement) === 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    // The original board light is blue or green, and the replacement board is red
+    if ((original.led === 'blue' || original.led === 'green') && replacement.led === 'red') {
+        // There are exactly 3 nodes on the original board
+        if (countNodes(original) === 3) {
+            // There are exactly 2 cut wires on the replacement board
+            if (countCutWires(replacement) === 2) {
+                // There are no cycles on either board
+                if (countCycles(original) === 0 && countCycles(replacement) === 0) {
+                    return true;
+                }
+            }
+            // There is no cut wire on either board
+            if (countCutWires(original) === 0 && countCutWires(replacement) === 0) {
+                // There is at least 1 cycle on the replacement board
+                if (countCycles(replacement) >= 1) {
+                    return true;
+                }
+            }
+        }
+        // There are exactly 2 nodes on the original board
+        if (countNodes(original) === 2) {
+            // There are no cut wires on the original board
+            if (countCutWires(original) === 0) {
+                // There is exactly 1 cycle on replacement board
+                if (countCycles(replacement) === 1) {
+                    return true;
+                }
+            }
+            // The wire is cut on the original board
+            if (countCutWires(original) === 1) {
+                // There are no cycles on the replacement board
+                if (countCycles(replacement) === 0) {
+                    return true;
+                }
+            }
+        }
+    }
+    // The lights on the original board and the replacement board are both blue
+    if (original.led === 'blue' && replacement.led === 'blue') {
+        // There are 5 nodes on both boards
+        if (countNodes(original) === 5 && countNodes(replacement) === 5) {
+            // There are no cut wires on the original board
+            if (countCutWires(original) === 0) {
+                // There are at least 2 cycles on the replacement board
+                if (countCycles(replacement) >= 2) {
+                    return true;
+                }
+            }
+            // There are 2 cut wires on the original board
+            if (countCutWires(original) === 2) {
+                // There is only 1 or no cycles on the original board
+                if (countCycles(original) <= 1) {
+                    return true;
+                }
+            }
+        }
+        // There are between 2 and 4 nodes on the replacement board
+        if (countNodes(replacement) >= 2 && countNodes(replacement) <= 4) {
+            // There exists only 1 wire on the replacement board
+            if (replacement.wires.length === 1) {
+                return true;
+            }
+            // All wires are cut on the replacement board
+            if (replacement.wires.length === countCutWires(replacement)) {
+                return true;
+            }
+        }
+    }
+    // The replacement board is any color BUT red
+    if (replacement.led !== 'red') {
+        // The replacement board has more nodes than the original board
+        if (countNodes(replacement) > countNodes(original)) {
+            // The replacement board and original board have no cut wires
+            if (countCutWires(original) === 0 && countCutWires(replacement) === 0) {
+                // For both boards, the number of cycles is equal to 2
+                if (countCycles(original) === 2 && countCycles(replacement) === 2) {
+                    return true;
+                }
+                // For the replacement board, there is exactly 1 cycle
+                if (countCycles(replacement) === 1) {
+                    return true;
+                }
+            }
+            // The original board has at least 1 cut wire and the replacement board has more cut wires than the original
+            if (countCutWires(original) >= 1 && countCutWires(replacement) > countCutWires(original)) {
+                // There are no cycles on either board
+                if (countCycles(original) === 0 && countCycles(replacement) === 0) {
+                    return true;
+                }
+                // There is 1 cycle on the replacement board
+                if (countCycles(replacement) === 1) {
+                    return true;
+                }
+            }
+        }
+        // The original board and replacement board both have 3 nodes
+        if (countNodes(original) === 3 && countNodes(replacement) === 3) {
+            // Both the boards have 2 wires, and the wires are cut
+            if (original.wires.length === 2 && replacement.wires.length === 2 &&
+                    countCutWires(original) === 2 && countCutWires(replacement) === 2) {
+                return true;
+            }
+            // The original board has 5 wires
+            if (original.wires.length === 5) {
+                // The original board has only 1 or no cycles
+                if (countCycles(original) <= 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function checkCircuits(target, circuits) {
+    for (var i = 0; i < circuits.length; i++) {
+        if (checkCircuit(target, circuits[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function generateCircuits(target, nCircuits) {
+    var circuits = [];
+    for (var i = 0; i < nCircuits; i++) {
+        circuits.push(generateCircuit);
+    }
+
+    while (true) {
+        var answerCircuit = generateCircuit();
+        if (checkCircuit(target, answerCircuit)) {
+            var randIndex = Math.floor(Math.random() * nCircuits);
+            circuits[randIndex] = answerCircuit;
+            return circuits;
+        }
+    }
 }
 
 var circuit = {
@@ -116,52 +303,7 @@ var circuit = {
 	]
 }
 
-console.log(countCycles(circuit));
+console.log(countNodes(circuit));
 renderCircuit(circuit);
-
-function countNodes(circuit) {
-    var count = 0;
-    for (var key in circuit.nodes) {
-        if (circuit.nodes.key) {
-            count++;
-        }
-    }
-    return count;
-}
-
-function countBrokenWires(circuit) {
-    var count = 0;
-    for (var i = 0; i < circuit.wires; i++) {
-        var wire = circuit.wires[i];
-        if (wire.broken) {
-            count++;
-        }
-    }
-    return count;
-}
-
-function checkCircuit(target, circuit) {
-    //TODO
-}
-
-function checkCircuits(target, circuits) {
-    for (var i = 0; i < circuits.length; i++) {
-        if (checkCircuit(target, circuits[i])) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function generateCircuits(target, nCircuits) {
-    while (true) {
-        var circuits = [];
-        for (var i = 0; i < nCircuits; i++) {
-            circuits.push(generateCircuit);
-        }
-
-        if (checkCircuits(target, circuits)) {
-            return circuits;
-        }
-    }
-}
+var circuits = generateCircuits(circuit, 10);
+console.log(circuits);
