@@ -72,6 +72,13 @@ window.MissionLink = {
 		for(var r in this.refs){
 			this._unsyncButton(r);
 		}
+	},
+	
+	sendMessage: function(msg){
+		db.ref('messages').push({
+			message: msg,
+			timestamp: Date.now()
+		});
 	}
 
 }
