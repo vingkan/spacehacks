@@ -1,3 +1,5 @@
+// VECTORS
+
 Math.radians = function(degrees) {
     return degrees * Math.PI / 180;
 }
@@ -24,7 +26,6 @@ function convertToCantor(rho, theta, phi) {
     return {a: a, b: b, c: c};
 }
 
-// Converts formula output given by engineer to a 3D vector
 function convertToVector(a, b, c) {
     var rho = invertCantor(a).x;
     var theta = invertCantor(b).x * 10;
@@ -36,7 +37,6 @@ function toCantor(x, y) {
     return ((x+y) * (x+y+1)) / 2 + y;
 }
 
-// Inverts the Cantor pairing function
 function invertCantor(z) {
     var w = Math.floor((Math.sqrt(8*z+1)-1) / 2);
     var t = (Math.pow(w, 2) + w) / 2;
@@ -44,6 +44,35 @@ function invertCantor(z) {
     var x = w - y;
     return {x: x, y: y};
 }
+
+// GRAPHICS
+
+function drawVector(ix, iy, iz){
+
+    var data = new vis.DataSet();
+    data.add({x: 0, y: 0, z: 0});
+    data.add({x: ix, y: iy, z: iz});
+
+    var options = {
+        width: '200px',
+        height: '200px',
+        style: 'line',
+        showPerspective: false,
+        showGrid: true,
+        keepAspectRatio: true,
+        verticalRatio: 1.0
+    };
+
+    // create our graph
+    var container = document.getElementById('display');
+    var graph = new vis.Graph3d(container, data, options);
+
+    graph.setCameraPosition(0.4, undefined, undefined);
+}
+
+drawVector(1, 1, 1);
+
+// GAMEPLAY
 
 function checkAnswer(target, answer) {
     var estimatedVector = convertToVector(answer.a, answer.b, answer.c);
@@ -53,6 +82,7 @@ function checkAnswer(target, answer) {
     }
     else {
         var cartesian = convertToCartesian(estimatedVector.rho, estimatedVector.theta, estimatedVector.phi);
+        drawVector(cartesian.x, cartesian.y, cartesian.z);
         console.log('Drawing red: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
     }
 }
@@ -67,7 +97,7 @@ function run() {
     console.log(target);
 
     var cartesian = convertToCartesian(target.rho, target.theta, target.phi);
-    //drawBaseVector()
+    drawVector(cartesian.x, cartesian.y, cartesian.z);
     console.log('Drawing black: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
 
     var answer = {
