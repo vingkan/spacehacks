@@ -19,41 +19,15 @@
 	<body>
 
 		<h1>SpaceHacks</h1>
-		<button id="alpha">Alpha</button>
-		<button id="beta">Beta</button>
-		<button id="gamma">Gamma</button>
-		<button id="delta">Delta</button>
+		<h2 id="display"></h2>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
+		<script type="text/javascript" src="lib/calibrate.js"></script>
 		<script type="text/javascript" src="lib/main.js"></script>
 
 		<script type="text/javascript">
 
-			document.getElementById('alpha').addEventListener('click', function(e) {
-				MissionLink._pushButton('alpha');
-			});
-
-			document.getElementById('beta').addEventListener('click', function(e) {
-				MissionLink._pushButton('beta');
-			});
-
-			document.getElementById('gamma').addEventListener('click', function(e) {
-				MissionLink._pushButton('gamma');
-			});
-
-			document.getElementById('delta').addEventListener('click', function(e) {
-				MissionLink._pushButton('delta');
-			});
-
-			MissionLink.sync();
-
-			MissionLink.alphaCallback = function(data){
-				console.log('Pushed Alpha.');
-			}
-
-			MissionLink.betaCallback = function(data){
-				console.log('Pushed Beta.');
-			}
+			console.log("LOADED MAIN");
 
 		</script>
 
