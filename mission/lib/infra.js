@@ -32,6 +32,8 @@ window.MissionLink = {
 		delta: false
 	},
 
+	readoutMode: 'normal',
+
 	// INTERNAL METHODS
 	_syncButton: function(p){
 		var _this = this;
@@ -57,6 +59,7 @@ window.MissionLink = {
 
 	// EXTERNAL METHODS
 	sync: function(){
+		var _this = this;
 		this.past = {
 			alpha: Date.now(),
 			beta: Date.now(),
@@ -66,19 +69,31 @@ window.MissionLink = {
 		for(var p in this.refs){
 			this.refs[p] = this._syncButton(p);
 		}
+		db.ref('readout').on('value', function(r){
+			_this.readoutMode = r.val();
+		});
 	},
 
 	unsync: function(){
 		for(var r in this.refs){
 			this._unsyncButton(r);
 		}
+		db.ref('readout').off();
 	},
-	
+
 	sendMessage: function(msg){
 		db.ref('messages').push({
 			message: msg,
 			timestamp: Date.now()
 		});
+	},
+
+	getReadoutMode: function(){
+		return this.readoutMode;
+	},
+
+	setReadoutMode: function(newMode){
+		db.ref('readout').set(newMode);
 	}
 
 }
