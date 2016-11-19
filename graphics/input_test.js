@@ -9,6 +9,7 @@ var m_anim      = require("animation");
 var m_app       = require("app");
 var m_data      = require("data");
 var m_scenes    = require("scenes");
+
 var m_geometry  = require("geometry");
 var m_transform = require("transform");
 
@@ -71,7 +72,7 @@ function main_canvas_click(e) {
  */
 function load() {
 	// name of the json file exported from blender
-    m_data.load("Playground.json", load_cb);
+    m_data.load("Engine.json", load_cb);
 }
 
 /**
