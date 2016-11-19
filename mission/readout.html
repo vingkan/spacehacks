@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpaceHacks</title>
+		<link rel="stylesheet" type="text/css" href="style/reset.css">
+		<link rel="stylesheet/less" type="text/css" href="style/readout.less">
+		<script type="text/javascript" src="lib/less.min.js"></script>
+		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
+		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+	</head>
+
+	<body>
+
+		<h1><span class="cursor">>: </span><span id="display">Messages will appear here.</span></h1>
+
+		<script type="text/javascript" src="lib/infra.js"></script>
+		<script type="text/javascript" src="lib/main.js"></script>
+		<script type="text/javascript" src="lib/transforms.js"></script>
+
+		<script type="text/javascript">
+
+			var display = document.getElementById('display');
+
+			MissionLink.sync();
+
+			var originalMsg = 'Messages will appear here.';
+
+			function transformMessage(msg){
+				var mode = MissionLink.getReadoutMode();
+				var transformer = TRANSFORMERS[mode];
+				if(transformer){
+					return transformer(msg);
+				}
+				else{
+					return msg;
+				}
+			}
+
+			function printMessage(msg){
+				originalMsg = msg;
+				display.innerText = transformMessage(msg);
+			}
+
+			var msgRef = db.ref('messages').orderByChild('timestamp').startAt(Date.now());
+			msgRef.on('child_added', function(snap){
+				var val = snap.val();
+				printMessage(val.message);
+			});
+
+			db.ref('readout').on('value', function(r){
+				printMessage(originalMsg);
+			});
+
+		</script>
+		
+	</body>
+</html>
