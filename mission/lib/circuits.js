@@ -33,6 +33,7 @@ function drawLine(i, f, stroke){
 	if(stroke){
 		ctx.strokeStyle = stroke;
 	}
+	ctx.lineWidth = 2;
 	ctx.stroke();
 	ctx.closePath();
 }
@@ -48,9 +49,28 @@ function drawText(text, i, opt){
 	if(s.fill){
 		ctx.fillStyle = s.fill;
 	}
-	ctx.fillText(text, i[0] - (s.size / 4), i[1] + (s.size / 4));
+	ctx.fillText(text, i[0] - (s.size * 0.25), i[1] + (s.size * 0.30));
 	ctx.closePath();
 }
+
+var NODE_POS = [
+	{x: 60, y: 50, node: false},
+	{x: 60, y: 150, node: false},
+	{x: 60, y: 250, node: false},
+	{x: 60, y: 350, node: false},
+	{x: 180, y: 50, node: false},
+	{x: 180, y: 150, node: false},
+	{x: 180, y: 250, node: false},
+	{x: 180, y: 350, node: false}
+];
+
+drawLine([0, 50], [240, 50], 'white');
+drawLine([0, 150], [240, 150], 'white');
+drawLine([0, 250], [240, 250], 'white');
+drawLine([0, 350], [240, 350], 'white');
+
+drawLine([60, 0], [60, 400], 'white');
+drawLine([180, 0], [180, 400], 'white');
 
 function renderCircuit(c){
 
@@ -61,18 +81,41 @@ function renderCircuit(c){
 		height: canvas.height,
 	}, '#20221fff');
 
-	drawCircle({
-		x: 100,
-		y: 100,
-		r: 20
-	}, 'green');
+	for(var n in c.nodes){
+		var node = c.nodes[n];
+		if(node){
+			var pos = {node: true};
+			while(pos.node){
+				var idx = Math.floor((NODE_POS.length * Math.random()));
+				pos = NODE_POS[idx];
+			}
+			c.nodes[n] = {exists: true, pos: pos};
+			pos.node = n;
+		}
+	}
 
-	drawText("A", [100, 100], {
-		size: 20
-	});
+	for(var w = 0; w < c.wires.length; w++){
+		var path = c.wires[w];
+		var i = c.nodes[path.node1].pos;
+		var f = c.nodes[path.node2].pos;
+		drawLine([i.x, i.y], [f.x, f.y], 'white');
+	}
 
-	drawLine([0, 0], [100, 100], 'red');
-
+	for(var n in c.nodes){
+		var node = c.nodes[n];
+		if(node){
+			var pos = node.pos;
+			drawCircle({
+				x: pos.x,
+				y: pos.y,
+				r: 20
+			}, 'green'); //#0cdc56ff
+			drawText(n.toUpperCase(), [pos.x, pos.y], {
+				size: 20,
+				fill: 'white'
+			});
+		}
+	}
 
 }
 
@@ -86,9 +129,9 @@ var circuit = {
 	},
 	led: 'red',
 	wires: [
-		{i: 'a', f: 'c', broken: false},
-		{i: 'c', f: 'b', broken: true}
+		{node1: 'a', node2: 'c', broken: false},
+		{node1: 'c', node2: 'b', broken: true}
 	]
 }
 
-renderCircuit(c);
+renderCircuit(circuit);
