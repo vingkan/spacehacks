@@ -99,24 +99,24 @@ function renderCircuit(c){
 	}, BASE_COLOR);
 
 	drawRect({
-		x: 98,
-		y: 78,
-		width: 44,
-		height: 44,
+		x: 75,
+		y: 50,
+		width: 100,
+		height: 100,
 	}, LED_COLOR[c.led]);
 
 	drawRect({
-		x: 100,
-		y: 80,
-		width: 40,
-		height: 40,
+		x: 85,
+		y: 60,
+		width: 80,
+		height: 80,
 	}, BASE_COLOR);
 
 	drawRect({
-		x: 110,
-		y: 90,
-		width: 20,
-		height: 20,
+		x: 100,
+		y: 75,
+		width: 50,
+		height: 50,
 	}, LED_COLOR[c.led]);
 
 	/*drawLine([0, 200], [1000, 200], {
@@ -205,7 +205,7 @@ function renderCircuit(c){
 			}
 
 		}
-		
+
 		drawCircle({
 			x: i.x,
 			y: i.y,
@@ -250,20 +250,3 @@ function renderCircuit(c){
 
 
 }
-
-var circuit = {
-	nodes: {
-		a: true,
-		b: true,
-		c: true,
-		d: false,
-		e: false
-	},
-	led: 'red',
-	wires: [
-		{node1: 'a', node2: 'c', broken: false},
-		{node1: 'c', node2: 'b', broken: true}
-	]
-}
-
-renderCircuit(circuit);
