@@ -47,7 +47,10 @@ function invertCantor(z) {
 
 // GRAPHICS
 
-function drawVector(ix, iy, iz){
+function drawVector(ix, iy, iz, opt){
+    var config = opt || {};
+    var target = config.id || 'display';
+    var lineColor = config.color || 'black';
 
     var data = new vis.DataSet();
     data.add({x: 0, y: 0, z: 0});
@@ -60,11 +63,18 @@ function drawVector(ix, iy, iz){
         showPerspective: false,
         showGrid: true,
         keepAspectRatio: true,
-        verticalRatio: 1.0
+        verticalRatio: 1.0,
+        xMin: -2,
+        xMax: 2,
+        yMin: -2,
+        yMax: 2,
+        zMin: -2,
+        zMax: 2,
+        dataColor: lineColor
     };
 
     // create our graph
-    var container = document.getElementById('display');
+    var container = document.getElementById(target);
     var graph = new vis.Graph3d(container, data, options);
 
     graph.setCameraPosition(0.4, undefined, undefined);
@@ -97,7 +107,10 @@ function run() {
     console.log(target);
 
     var cartesian = convertToCartesian(target.rho, target.theta, target.phi);
-    drawVector(cartesian.x, cartesian.y, cartesian.z);
+    drawVector(cartesian.x, cartesian.y, cartesian.z, {
+        id: 'truth',
+        color: 'red'
+    });
     console.log('Drawing black: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
 
     var answer = {
