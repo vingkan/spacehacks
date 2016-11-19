@@ -1,7 +1,9 @@
 "use strict"
 
+// var THREE = require('three');
+// var StereoEffect = require('three-stereo-effect')(THREE);
 // register the application module
-b4w.register("input_test", function(exports, require) {
+b4w.register("stereo_view", function(exports, require) {
 
 
 // import modules used by the app
@@ -14,6 +16,7 @@ var m_textures  = require("textures");
 var m_scenes    = require("scenes");
 var m_material  = require("material");
 var m_cont 		= require("container");
+var m_gyro      = require("gyroscope");
 
 var m_util 		= require("util");
 var m_lights 	= require("lights");
@@ -26,17 +29,6 @@ var WAITING_DELAY = 1000;
 var DEBUG = (m_version.type() === "DEBUG");
 var _previous_selected_obj = null;
 var _cam_waiting_handle = null;
-
-var config = {
-    apiKey: "AIzaSyBRwFZhOh7Yt_kfKZVKRCHwvn92gX0EGew",
-    authDomain: "spacehacks-58330.firebaseapp.com",
-    databaseURL: "https://spacehacks-58330.firebaseio.com",
-    storageBucket: "spacehacks-58330.appspot.com",
-    messagingSenderId: "559373315205"
-};
-
-var SHFirebase = firebase.initializeApp(config);
-var db = SHFirebase.database();
 
 /**
  * export the method to initialize the app (called at the bottom of this file)
@@ -106,16 +98,80 @@ function load_cb(data_id) {
     m_app.enable_controls();
     m_app.enable_camera_controls();
 
-    // place your code here
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere0"));
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere2"));
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere4"));
-
-    //var error_cap = m_scenes.get_object_by_name("Text");
-    m_app.enable_camera_controls();
+    m_gyro.enable_camera_rotation();
 
     if (Boolean(get_user_media()))
         start_video();
+
+    var stereoCanvas = m_textures.get_canvas_ctx(m_scenes.get_object_by_name("TV_R"), "Texture.001");
+    console.log(stereoCanvas);
+    // if ( webglAvailable() ) {
+    //     renderer = new THREE.WebGLRenderer(stereoCanvas);
+    // } else {
+    //     renderer = new THREE.CanvasRenderer(stereoCanvas);
+    // }
+    // renderer = new THREE.CanvasRenderer(stereoCanvas);
+    // stereoEfx = new THREE.StereoEffect(renderer);
+    // //stereoEffect = new StereoEffect(renderer);
+    // stereoEfx.eyeSeparation = 1;
+    // stereoEfx.setSize( stereoCanvas.canvas.width, stereoCanvas.canvas.height );
+
+    // var mylatesttap;
+    // var now = new Date().getTime();
+    // var timesince = now - mylatesttap;
+    // if((timesince < 600) && (timesince > 0)){
+    //     toggleFullScreen();
+    //     console.log("double tabl");
+    // }
+
+    stereoCanvas.canvas.addEventListener('dblclick', function(){ 
+        toggleFullScreen();
+        console.log("double tap");
+    });
+}
+
+// var mylatesttap;
+// function doubletap() {
+
+//    var now = new Date().getTime();
+//    var timesince = now - mylatesttap;
+//    if((timesince < 600) && (timesince > 0)){
+
+//     // double tap   
+
+//    }else{
+//             // too much time to be a doubletap
+//          }
+
+//    mylatesttap = new Date().getTime();
+
+// }
+
+function toggleFullScreen() {
+  var doc = window.document;
+  var docEl = doc.documentElement;
+
+  var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+  var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+  if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    requestFullScreen.call(docEl);
+  }
+  else {
+    cancelFullScreen.call(doc);
+  }
+}
+
+function webglAvailable() {
+    try {
+        var canvas = document.createElement( 'canvas' );
+        return !!( window.WebGLRenderingContext && (
+            canvas.getContext( 'webgl' ) ||
+            canvas.getContext( 'experimental-webgl' ) )
+        );
+    } catch ( e ) {
+        return false;
+    }
 }
 
 function get_user_media() {
@@ -144,32 +200,13 @@ function start_video() {
         var video = document.createElement("video");
         video.setAttribute("autoplay", "true");
         video.src = window.URL.createObjectURL(local_media_stream);
-        // var error_cap = m_scenes.get_object_by_name("Text");
-        // m_scenes.hide_object(error_cap);
 
         var obj = m_scenes.get_object_by_name("TV_R"); // name of the object 
         var context = m_textures.get_canvas_ctx(obj, "Texture.001");
         var update_canvas = function() {
         	//context.change_image(obj, "Texture.001", "blendFiles/_texture/screen.png");
         	//context.play_video(video);
-
-        db.ref('modules/circuits/data-uri').on('value', function(snap){
-
-        });
-        var dataURI = 'data:image/gif;base64,R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAw AAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapyuvUUlvONmOZtfzgFz ByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSp a/TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJl ZeGl9i2icVqaNVailT6F5iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uis F81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97Vriy/Xl4/f1cf5VWzXyym7PH hhx4dbgYKAAA7';
-
-        var imgObj = new Image();
-        imgObj.crossOrigin = 'anonymous';
-        imgObj.src = dataURI;
-        imgObj.onload = function(){
-            //ctx.drawImage(this, 0, 0);
-            //ctx.drawImage(imgObj, 0, 0, 200, 200, 0, 0, ctx.canvas.width, ctx.canvas.height);
-            context.drawImage(imgObj, 0, 0, context.canvas.width, context.canvas.height);
-            console.log(context.canvas.width, context.canvas.height)
-        }
-        
-
-            //context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, context.canvas.width, context.canvas.height);
+            context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, context.canvas.width, context.canvas.height);
             m_textures.update_canvas_ctx(obj, "Texture.001");
             setTimeout(function() {update_canvas()}, TIME_DELAY);
         }
@@ -180,7 +217,6 @@ function start_video() {
     };
 
     var fail_cb = function() {
-        //var error_cap = m_scenes.get_object_by_name("Text");
         _cam_waiting_handle = setTimeout(start_video, WAITING_DELAY);
     };
 
@@ -190,5 +226,5 @@ function start_video() {
 });
 
 // import the app module and start the app by calling the init method
-b4w.require("input_test").init();
+b4w.require("stereo_view").init();
 
