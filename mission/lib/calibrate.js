@@ -80,8 +80,6 @@ function drawVector(ix, iy, iz, opt){
     graph.setCameraPosition(0.4, undefined, undefined);
 }
 
-drawVector(1, 1, 1);
-
 // GAMEPLAY
 
 function checkAnswer(target, answer) {
@@ -92,7 +90,10 @@ function checkAnswer(target, answer) {
     }
     else {
         var cartesian = convertToCartesian(estimatedVector.rho, estimatedVector.theta, estimatedVector.phi);
-        drawVector(cartesian.x, cartesian.y, cartesian.z);
+        drawVector(cartesian.x, cartesian.y, cartesian.z, {
+            id: 'display',
+            color: 'red'
+        });
         console.log('Drawing red: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
     }
 }
@@ -109,7 +110,7 @@ function run() {
     var cartesian = convertToCartesian(target.rho, target.theta, target.phi);
     drawVector(cartesian.x, cartesian.y, cartesian.z, {
         id: 'truth',
-        color: 'red'
+        color: 'black'
     });
     console.log('Drawing black: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
 
