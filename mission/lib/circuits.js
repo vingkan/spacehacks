@@ -16,24 +16,40 @@ function drawRect(r, fill){
 	ctx.closePath();
 }
 
-function drawCircle(c, fill){
+function drawCircle(c, opt){
+	var s = {
+		fill: opt.fill || false,
+		stroke: opt.stroke || false,
+		dashes: opt.dashes || false
+	}
 	ctx.beginPath();
 	ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI, false);
-	if(fill){
-		ctx.fillStyle = fill;
+	if(s.fill){
+		ctx.fillStyle = s.fill;
 		ctx.fill();
+	}
+	if(s.stroke){
+		if(s.dashes){
+			ctx.setLineDash(s.dashes);
+		}
+		ctx.strokeStyle = s.stroke;
+		ctx.stroke();
 	}
 	ctx.closePath();
 }
 
-function drawLine(i, f, stroke){
-	ctx.beginPath();
-	ctx.moveTo(i[0], i[1]);
-	ctx.lineTo(f[0], f[1]);
-	if(stroke){
-		ctx.strokeStyle = stroke;
+function drawLine(i, f, opt){
+	var s = {
+		stroke: opt.stroke || 'white',
+		offset: opt.offset || 0
 	}
-	ctx.lineWidth = 2;
+	ctx.beginPath();
+	ctx.moveTo(i[0] + s.offset, i[1] + s.offset);
+	ctx.lineTo(f[0] + s.offset, f[1] + s.offset);
+	if(s.stroke){
+		ctx.strokeStyle = s.stroke;
+	}
+	ctx.lineWidth = 5;
 	ctx.stroke();
 	ctx.closePath();
 }
@@ -54,14 +70,14 @@ function drawText(text, i, opt){
 }
 
 var NODE_POS = [
-	{x: 60, y: 50, node: false},
-	{x: 60, y: 150, node: false},
-	{x: 60, y: 250, node: false},
-	{x: 60, y: 350, node: false},
-	{x: 180, y: 50, node: false},
-	{x: 180, y: 150, node: false},
-	{x: 180, y: 250, node: false},
-	{x: 180, y: 350, node: false}
+	{x: 250, y: 200, node: 'EMPTY'},
+	{x: 250, y: 400, node: 'EMPTY'},
+	{x: 250, y: 600, node: 'EMPTY'},
+	{x: 250, y: 800, node: 'EMPTY'},
+	{x: 750, y: 200, node: 'EMPTY'},
+	{x: 750, y: 400, node: 'EMPTY'},
+	{x: 750, y: 600, node: 'EMPTY'},
+	{x: 750, y: 800, node: 'EMPTY'}
 ];
 
 var BASE_COLOR = '#20221f';
@@ -103,28 +119,53 @@ function renderCircuit(c){
 		height: 20,
 	}, LED_COLOR[c.led]);
 
-	/*drawLine([0, 50], [240, 50], 'gray');
-	drawLine([0, 150], [240, 150], 'gray');
-	drawLine([0, 250], [240, 250], 'gray');
-	drawLine([0, 350], [240, 350], 'gray');
+	/*drawLine([0, 200], [1000, 200], {
+		stroke: 'gray'
+	});
+	drawLine([0, 400], [1000, 400], {
+		stroke: 'gray'
+	});
+	drawLine([0, 600], [1000, 600], {
+		stroke: 'gray'
+	});
+	drawLine([0, 800], [1000, 800], {
+		stroke: 'gray'
+	});
 
-	drawLine([60, 0], [60, 400], 'gray');
-	drawLine([180, 0], [180, 400], 'gray');*/
+	drawLine([250, 0], [250, 1000], {
+		stroke: 'gray'
+	});
+	drawLine([750, 0], [750, 1000], {
+		stroke: 'gray'
+	});*/
+
+	var USED_IDX = [];
 
 	for(var n in c.nodes){
 		var node = c.nodes[n];
 		if(node){
-			var pos = {node: true};
-			while(pos.node){
+			var placed = false;
+			while(!placed){
 				var idx = Math.floor((NODE_POS.length * Math.random()));
-				pos = NODE_POS[idx];
+				if(USED_IDX.indexOf(idx) > -1){
+
+				}
+				else{
+					USED_IDX.push(idx);
+					placed = true;
+					c.nodes[n] = {pos: NODE_POS[idx]};
+					
+				}
 			}
-			c.nodes[n] = {exists: true, pos: pos};
-			pos.node = n;
 		}
 	}
 
+	var WIRE_INCREMENT = 1;
+	var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
+
 	for(var w = 0; w < c.wires.length; w++){
+		var DW = WIRE_INCREMENT * 10;
+		var wireColor = WIRE_COLORS.pop();
 		var path = c.wires[w];
 		var i = c.nodes[path.node1].pos;
 		var f = c.nodes[path.node2].pos;
@@ -132,30 +173,58 @@ function renderCircuit(c){
 			x: 0,
 			y: 0	
 		}
-		if(i.x === f.x || i.y == f.y){
-			drawLine([i.x, i.y], [f.x, f.y], 'white');
-			if(i.x === f.x){
-				brk.x = i.x;
-				brk.y = (f.y - i.y) / 2;
+
+		if(!path.broken){
+
+			if(i.x === f.x || i.y == f.y){
+				drawLine([i.x, i.y], [f.x, f.y], {
+					stroke: wireColor
+				});
+				if(i.x === f.x){
+					var diff = f.y - i.y;
+					var dir = diff / Math.abs(diff);
+					brk.x = i.x;
+					brk.y = i.y + (WIRE_INCREMENT * 15 * dir);
+				}
+				else{
+					var diff = f.x - i.x;
+					var dir = diff / Math.abs(diff);
+					brk.x = i.x + (WIRE_INCREMENT * 15 * dir);
+					brk.y = i.y;
+				}
 			}
 			else{
-				brk.x = (f.x - i.x) / 2;
-				brk.y = i.y;
+				drawLine([i.x, i.y], [i.x, f.y], {
+					stroke: wireColor
+				});
+				drawLine([i.x, f.y], [f.x, f.y], {
+					stroke: wireColor
+				});
+				brk.x = i.x;
+				brk.y = f.y;
 			}
+
 		}
-		else{
-			drawLine([i.x, i.y], [i.x, f.y], 'white');
-			drawLine([i.x, f.y], [f.x, f.y], 'white');
-			brk.x = i.x;
-			brk.y = f.y;
-		}
-		if(path.broken){
-			drawCircle({
-				x: brk.x,
-				y: brk.y,
-				r: 10
-			}, BASE_COLOR);
-		}
+		
+		drawCircle({
+			x: i.x,
+			y: i.y,
+			r: 40 + (WIRE_INCREMENT * 20)
+		}, {
+			stroke: wireColor,
+			dashes: path.broken ? [5, 15] : false
+		});
+
+		drawCircle({
+			x: f.x,
+			y: f.y,
+			r: 40 + (WIRE_INCREMENT * 20)
+		}, {
+			stroke: wireColor,
+			dashes: path.broken ? [5, 15] : false
+		});
+
+		WIRE_INCREMENT++;
 	}
 
 	for(var n in c.nodes){
@@ -165,14 +234,20 @@ function renderCircuit(c){
 			drawCircle({
 				x: pos.x,
 				y: pos.y,
-				r: 20
-			}, CIRCUIT_GREEN);
+				r: 35
+			}, {
+				fill: CIRCUIT_GREEN
+			});
 			drawText(n.toUpperCase(), [pos.x, pos.y], {
-				size: 20,
-				fill: 'white'
+				size: 35,
+				fill: BASE_COLOR
 			});
 		}
 	}
+
+	var dataURI = canvas.toDataURL();
+	db.ref('modules/circuits/data-uri').set(dataURI);
+
 
 }
 
