@@ -4,6 +4,7 @@ var XYZ = function(x, y, z){
 		y: y,
 		z: z
 	}
+<<<<<<< HEAD
 }
 
 var x = [0, 1];
@@ -38,3 +39,6 @@ Plotly.plot('graph', [{
 		color: 'red'
 	}
 });
+=======
+}
+>>>>>>> master

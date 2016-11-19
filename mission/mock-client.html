@@ -8,23 +8,7 @@
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script type="text/javascript" src="lib/agility.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
-<<<<<<< HEAD
-		<script>
-			// Initialize Firebase
-			var config = {
-				apiKey: "AIzaSyBRwFZhOh7Yt_kfKZVKRCHwvn92gX0EGew",
-				authDomain: "spacehacks-58330.firebaseapp.com",
-				databaseURL: "https://spacehacks-58330.firebaseio.com",
-				storageBucket: "spacehacks-58330.appspot.com",
-				messagingSenderId: "559373315205"
-			};
-			firebase.initializeApp(config);
-		</script>
-=======
->>>>>>> master
-		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<style>
 
 
@@ -35,17 +19,49 @@
 	<body>
 
 		<h1>SpaceHacks</h1>
-		<div id="graph"></div>
+		<h2 id="display"></h2>
 
-<<<<<<< HEAD
-=======
 		<script type="text/javascript" src="lib/infra.js"></script>
->>>>>>> master
 		<script type="text/javascript" src="lib/main.js"></script>
 
 		<script type="text/javascript">
 
 			console.log("LOADED MAIN");
+
+			var words = [
+				'Ares',
+				'Hermes',
+				'Zeus',
+				'Poseidon',
+				'Hades',
+				'Hera'
+			]
+
+			var display = document.getElementById('display');
+			var widx = 0;
+			render();
+
+			function render(){
+				widx = (words.length + widx) % words.length;
+				var newWord = words[widx];
+				display.innerText = newWord;
+				if(newWord === 'Poseidon'){
+					alert('Challenge Complete!')
+					MissionLink.unsync();
+				}
+			}
+
+			MissionLink.sync();
+
+			MissionLink.alphaCallback = function(data){
+				widx += -1;
+				render();
+			}
+
+			MissionLink.betaCallback = function(data){
+				widx += 1;
+				render();
+			}
 
 		</script>
 		
