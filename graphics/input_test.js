@@ -146,6 +146,8 @@ function start_video() {
             setTimeout(function() {update_canvas()}, TIME_DELAY);
         }
 
+        console.log('Vinesh was here.');
+
         video.onloadedmetadata = function(e) {
             update_canvas();
         };
