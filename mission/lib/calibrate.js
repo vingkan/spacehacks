@@ -94,7 +94,6 @@ function checkAnswer(target, answer) {
             id: 'display',
             color: 'red'
         });
-        console.log('Drawing red: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
     }
 }
 
@@ -112,7 +111,6 @@ function run() {
         id: 'truth',
         color: 'black'
     });
-    console.log('Drawing black: ', cartesian.x, ' ', cartesian.y, ' ', cartesian.z);
 
     var answer = {
         a: undefined,
