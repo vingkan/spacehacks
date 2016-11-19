@@ -29,12 +29,20 @@
 
 		<script type="text/javascript">
 
-			document.getElementById('alpha').addEventListener('click', function(e){
+			document.getElementById('alpha').addEventListener('click', function(e) {
 				MissionLink._pushButton('alpha');
 			});
 
-			document.getElementById('beta').addEventListener('click', function(e){
+			document.getElementById('beta').addEventListener('click', function(e) {
 				MissionLink._pushButton('beta');
+			});
+
+			document.getElementById('gamma').addEventListener('click', function(e) {
+				MissionLink._pushButton('gamma');
+			});
+
+			document.getElementById('delta').addEventListener('click', function(e) {
+				MissionLink._pushButton('delta');
 			});
 
 			MissionLink.sync();
@@ -44,10 +52,10 @@
 			}
 
 			MissionLink.betaCallback = function(data){
-				console.log('Pushed Alpha.');
+				console.log('Pushed Beta.');
 			}
 
 		</script>
-		
+
 	</body>
 </html>
