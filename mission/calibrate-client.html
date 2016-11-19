@@ -23,11 +23,37 @@
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/calibrate.js"></script>
-		<script type="text/javascript" src="lib/main.js"></script>
+		<script type="text/javascript" src="lib/vis.js"></script>
 
 		<script type="text/javascript">
 
-			console.log("LOADED MAIN");
+var data = null;
+var graph = null;
+
+function drawVector(ix, iy, iz){
+	
+	data = new vis.DataSet();
+	data.add({x: 0, y: 0, z: 0});
+	data.add({x: ix, y: iy, z: iz});
+	
+	var options = {
+		width: '200px',
+		height: '200px',
+		style: 'line',
+		showPerspective: false,
+		showGrid: true,
+		keepAspectRatio: true,
+		verticalRatio: 1.0
+	};
+
+	// create our graph
+	var container = document.getElementById('display');
+	graph = new vis.Graph3d(container, data, options);
+
+	graph.setCameraPosition(0.4, undefined, undefined);
+}
+
+drawVector(1, 1, 1);
 
 		</script>
 
