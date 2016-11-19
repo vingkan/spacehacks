@@ -74,6 +74,9 @@ function main_canvas_click(e) {
         }
         _previous_selected_obj = obj;
 
+        if (obj.name == "fullscreen")
+            toggleFullScreen();
+
         m_anim.apply_def(obj);
         m_anim.play(obj);
         // m_anim.play(obj, function(data) {
