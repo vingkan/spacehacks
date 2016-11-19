@@ -45,6 +45,8 @@ powercore class
 	remaining energy — how long sys can stay running
 	type — which ship sys to plug into
 
+===============================================================
+
 auto-nav
 —> calibration — trajectory is incorrect, how do we re-align 	the ship?
 
@@ -119,3 +121,11 @@ power core
 	ex: remaining energy — which power core is best to 		use? less remaining life in fuel source = switch more 		often, more = more volatile
 
 	ex: type — some fuel sources are best for power life 		support systems, some are best for powering the ion-		drive for warping
+
+==================================================
+
+aspect of time
+
+as time increases (0 --> infinity, ideally), distance from object decreases (constant value - warp factor of ship * time, updated every minute)
+
+as time increases, systems consume resources and energy
