@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpaceHacks</title>
+		<link rel="stylesheet" type="text/css" href="style/reset.css">
+		<link rel="stylesheet/less" type="text/css" href="style/main.less">
+		<!-- LESS JS <script type="text/javascript" src="lib/less.min.js"></script> -->
+		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
+		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+		<style>
+
+
+
+		</style>
+	</head>
+
+	<body>
+
+		<h1>SpaceHacks</h1>
+		<button id="alpha">Alpha</button>
+		<button id="beta">Beta</button>
+		<button id="gamma">Gamma</button>
+		<button id="delta">Delta</button>
+
+		<script type="text/javascript" src="lib/infra.js"></script>
+		<script type="text/javascript" src="lib/main.js"></script>
+
+		<script type="text/javascript">
+
+			document.getElementById('alpha').addEventListener('click', function(e){
+				MissionLink._pushButton('alpha');
+			});
+
+			document.getElementById('beta').addEventListener('click', function(e){
+				MissionLink._pushButton('beta');
+			});
+
+			MissionLink.sync();
+
+			MissionLink.alphaCallback = function(data){
+				console.log('Pushed Alpha.');
+			}
+
+			MissionLink.betaCallback = function(data){
+				console.log('Pushed Alpha.');
+			}
+
+		</script>
+		
+	</body>
+</html>

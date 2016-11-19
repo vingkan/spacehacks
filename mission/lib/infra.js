@@ -10,36 +10,68 @@ var SHFirebase = firebase.initializeApp(config);
 var db = SHFirebase.database();
 
 window.MissionLink = {
+
+	// CALLBACKS
 	alphaCallback: false,
 	betaCallback: false,
 	gammaCallback: false,
-	deltaCallback: false
-}
+	deltaCallback: false,
 
-var PAST = {
-	alpha: Date.now(),
-	beta: Date.now(),
-	gamma: Date.now(),
-	delta: Date.now()
-}
+	// STATES
+	past: {
+		alpha: Infinity,
+		beta: Infinity,
+		gamma: Infinity,
+		delta: Infinity
+	},
 
-function syncButton(p){
-	db.ref('buttons/' + p).on('child_added', function(snap){
-		var val = snap.val();
-		if(val.timestamp > PAST[p]){
-			PAST[p] = val.timestamp;
-			var callback = MissionLink[p + 'Callback'];
-			if(callback){
-				callback(val);
+	refs: {
+		alpha: false,
+		beta: false,
+		gamma: false,
+		delta: false
+	},
+
+	// INTERNAL METHODS
+	_syncButton: function(p){
+		var _this = this;
+		db.ref('buttons/' + p).on('child_added', function(snap){
+			var val = snap.val();
+			if(val.timestamp > _this.past[p]){
+				_this.past[p] = val.timestamp;
+				var callback = _this[p + 'Callback'];
+				if(callback){
+					callback(val);
+				}
 			}
+		});
+	},
+
+	_unsyncButton: function(p){
+		db.ref('buttons/' + p).off();
+	},
+
+	_pushButton: function(id){
+		db.ref('buttons/' + id).push({timestamp: Date.now()});
+	},
+
+	// EXTERNAL METHODS
+	sync: function(){
+		this.past = {
+			alpha: Date.now(),
+			beta: Date.now(),
+			gamma: Date.now(),
+			delta: Date.now()
 		}
-	});
-}
+		for(var p in this.refs){
+			this.refs[p] = this._syncButton(p);
+		}
+	},
 
-for(var p in PAST){
-	syncButton(p);
-}
+	unsync: function(){
+		for(var r in this.refs){
+			this._unsyncButton(r);
+		}
+	}
 
-MissionLink.alphaCallback = function(data){
-	console.log('Alpha: ', data);
 }
