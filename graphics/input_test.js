@@ -27,16 +27,43 @@ var DEBUG = (m_version.type() === "DEBUG");
 var _previous_selected_obj = null;
 var _cam_waiting_handle = null;
 
-var config = {
-    apiKey: "AIzaSyBRwFZhOh7Yt_kfKZVKRCHwvn92gX0EGew",
-    authDomain: "spacehacks-58330.firebaseapp.com",
-    databaseURL: "https://spacehacks-58330.firebaseio.com",
-    storageBucket: "spacehacks-58330.appspot.com",
-    messagingSenderId: "559373315205"
-};
+MissionLink.sync();
 
-var SHFirebase = firebase.initializeApp(config);
-var db = SHFirebase.database();
+/**
+ * Support sketchy iFrame operations by donating to W3 today!
+ */
+function getIframeWindow(iframe_object) {
+  var doc;
+
+  if (iframe_object.contentWindow) {
+    return iframe_object.contentWindow;
+  }
+
+  if (iframe_object.window) {
+    return iframe_object.window;
+  } 
+
+  if (!doc && iframe_object.contentDocument) {
+    doc = iframe_object.contentDocument;
+  } 
+
+  if (!doc && iframe_object.document) {
+    doc = iframe_object.document;
+  }
+
+  if (doc && doc.defaultView) {
+   return doc.defaultView;
+  }
+
+  if (doc && doc.parentWindow) {
+    return doc.parentWindow;
+  }
+
+  return undefined;
+}
+
+/*var el = document.getElementById('targetFrame');
+getIframeWindow(el).putme();*/
 
 /**
  * export the method to initialize the app (called at the bottom of this file)
@@ -66,6 +93,13 @@ function init_cb(canvas_elem, success) {
     load();
 }
 
+var BUTTON_MAPPING = {
+    'Circle': 'alpha',
+    'Square': 'beta',
+    'Triangle': 'gamma',
+    'Diamond': 'delta'
+}
+
 function main_canvas_click(e) {
     if (e.preventDefault)
         e.preventDefault();
@@ -88,6 +122,7 @@ function main_canvas_click(e) {
         // 	m_anim.stop(data);
         // });
         console.log(obj);
+        MissionLink._pushButton(BUTTON_MAPPING[obj.name]);
     }
 }
 
