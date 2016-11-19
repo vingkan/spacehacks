@@ -8,9 +8,7 @@
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script type="text/javascript" src="lib/agility.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
-		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<style>
 
 
@@ -21,7 +19,7 @@
 	<body>
 
 		<h1>SpaceHacks</h1>
-		<div id="graph"></div>
+		<h2 id="display"></h2>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/main.js"></script>
@@ -30,15 +28,42 @@
 
 			console.log("LOADED MAIN");
 
+			var words = [
+				'Ares',
+				'Hermes',
+				'Zeus',
+				'Poseidon',
+				'Hades',
+				'Hera'
+			]
+
+			var display = document.getElementById('display');
+			var widx = 0;
+			render();
+
+			function render(){
+				widx = (words.length + widx) % words.length;
+				var newWord = words[widx];
+				display.innerText = newWord;
+				if(newWord === 'Poseidon'){
+					alert('Challenge Complete!')
+					MissionLink.unsync();
+				}
+			}
+
+			MissionLink.sync();
+
+			MissionLink.alphaCallback = function(data){
+				widx += -1;
+				render();
+			}
+
+			MissionLink.betaCallback = function(data){
+				widx += 1;
+				render();
+			}
+
 		</script>
-
-		<script type="text/javascript" src="lib/calibrate.js"></script>
-
-		<script type="text/javascript">
-
-			console.log("LOADED CALIBRATE");
-
-		</script>
-
+		
 	</body>
 </html>
