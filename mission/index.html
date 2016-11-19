@@ -10,6 +10,29 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script type="text/javascript" src="lib/agility.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+		<script>
+			// Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyBRwFZhOh7Yt_kfKZVKRCHwvn92gX0EGew",
+				authDomain: "spacehacks-58330.firebaseapp.com",
+				databaseURL: "https://spacehacks-58330.firebaseio.com",
+				storageBucket: "spacehacks-58330.appspot.com",
+				messagingSenderId: "559373315205"
+			};
+			firebase.initializeApp(config);
+		</script>
+=======
+>>>>>>> master
+=======
+>>>>>>> master
+=======
+>>>>>>> master
+=======
+>>>>>>> master
 		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<style>
 
@@ -23,14 +46,66 @@
 		<h1>SpaceHacks</h1>
 		<div id="graph"></div>
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
 		<script type="text/javascript" src="lib/infra.js"></script>
-		<script type="text/javascript" src="lib/main.js"></script>
+>>>>>>> master
+=======
+		<script type="text/javascript" src="lib/infra.js"></script>
+>>>>>>> master
+=======
+		<script type="text/javascript" src="lib/infra.js"></script>
+>>>>>>> master
+=======
+		<script type="text/javascript" src="lib/infra.js"></script>
+>>>>>>> master
+		<script type="text/javascript" src="lib/vis.js"></script>
 
 		<script type="text/javascript">
 
-			console.log("LOADED MAIN");
+			var data = null;
+			var graph = null;
+
+			// Called when the Visualization API is loaded.
+			function drawVisualization() {
+			// Create and populate a data table.
+			data = new vis.DataSet();
+
+			// create some nice looking data with sin/cos
+			var steps = 500;
+			var axisMax = 314;
+			var tmax = 4 * 2 * Math.PI;
+			var axisStep = axisMax / steps;
+			for (var t = 0; t < tmax; t += tmax / steps) {
+				var r = 1;
+				var x = r * Math.sin(t);
+				var y = r * Math.cos(t);
+				var z = t / tmax;
+				data.add({x:x,y:y,z:z});
+			}
+
+			// specify options
+			var options = {
+				width:  '600px',
+				height: '600px',
+				style: 'line',
+				showPerspective: false,
+				showGrid: true,
+				keepAspectRatio: true,
+				verticalRatio: 1.0
+			};
+
+			// create our graph
+			var container = document.getElementById('mygraph');
+			graph = new vis.Graph3d(container, data, options);
+
+			graph.setCameraPosition(0.4, undefined, undefined);
+			}
 
 		</script>
-		
+
 	</body>
 </html>
