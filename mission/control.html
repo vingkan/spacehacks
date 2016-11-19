@@ -13,18 +13,18 @@
 
 	<body>
 
-		<h1><span class="cursor">>: </span><span id="display">Messages will appear here.</span></h1>
+		<textarea id="sender" placeholder="Write messages here."></textarea>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/main.js"></script>
 
 		<script type="text/javascript">
 
-			var msgRef = db.ref('messages').orderByChild('timestamp').startAt(Date.now());
-			msgRef.on('child_added', function(snap){
-				var val = snap.val();
-				var display = document.getElementById('display');
-				display.innerText = val.message;
+			var sender = document.getElementById('sender');
+			sender.addEventListener('keypress', function(e){
+				if(e.keyCode === 13){
+					MissionLink.sendMessage(sender.value);
+				}
 			});
 
 		</script>

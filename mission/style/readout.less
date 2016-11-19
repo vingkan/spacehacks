@@ -36,3 +36,33 @@ span.cursor {
 	color: white;
 	.BlinkCursor();
 }
+
+@ScreenBlue: #009FB7;
+
+textarea {
+
+	display: block;
+	outline: 2px solid @ScreenBlue;
+	width: 80vw;
+	max-width: 80vw;
+	height: 80vh;
+	max-height: 80vh;
+	padding: 20px;
+	margin: 5vh auto 0;
+	line-height: 50px;
+	font-size: 35px;
+	text-transform: uppercase;
+	color: white;
+	background: rgba(
+		red(@ScreenBlue),
+		green(@ScreenBlue),
+		blue(@ScreenBlue), 0.50);
+
+	&:focus {
+		background: rgba(
+			red(@ScreenBlue),
+			green(@ScreenBlue),
+			blue(@ScreenBlue), 0.25);
+	}
+	
+}
