@@ -108,47 +108,8 @@ function load_cb(data_id) {
 
     var stereoCanvas = m_textures.get_canvas_ctx(m_scenes.get_object_by_name("TV_R"), "Texture.001");
     console.log(stereoCanvas);
-    // if ( webglAvailable() ) {
-    //     renderer = new THREE.WebGLRenderer(stereoCanvas);
-    // } else {
-    //     renderer = new THREE.CanvasRenderer(stereoCanvas);
-    // }
-    // renderer = new THREE.CanvasRenderer(stereoCanvas);
-    // stereoEfx = new THREE.StereoEffect(renderer);
-    // //stereoEffect = new StereoEffect(renderer);
-    // stereoEfx.eyeSeparation = 1;
-    // stereoEfx.setSize( stereoCanvas.canvas.width, stereoCanvas.canvas.height );
 
-    // var mylatesttap;
-    // var now = new Date().getTime();
-    // var timesince = now - mylatesttap;
-    // if((timesince < 600) && (timesince > 0)){
-    //     toggleFullScreen();
-    //     console.log("double tabl");
-    // }
-
-    stereoCanvas.canvas.addEventListener('dblclick', function(){ 
-        toggleFullScreen();
-        console.log("double tap");
-    });
 }
-
-// var mylatesttap;
-// function doubletap() {
-
-//    var now = new Date().getTime();
-//    var timesince = now - mylatesttap;
-//    if((timesince < 600) && (timesince > 0)){
-
-//     // double tap   
-
-//    }else{
-//             // too much time to be a doubletap
-//          }
-
-//    mylatesttap = new Date().getTime();
-
-// }
 
 function toggleFullScreen() {
   var doc = window.document;
@@ -165,18 +126,6 @@ function toggleFullScreen() {
   }
 }
 
-function webglAvailable() {
-    try {
-        var canvas = document.createElement( 'canvas' );
-        return !!( window.WebGLRenderingContext && (
-            canvas.getContext( 'webgl' ) ||
-            canvas.getContext( 'experimental-webgl' ) )
-        );
-    } catch ( e ) {
-        return false;
-    }
-}
-
 function get_user_media() {
     if (Boolean(navigator.getUserMedia))
         return navigator.getUserMedia.bind(navigator);
@@ -189,6 +138,7 @@ function get_user_media() {
     else
         return null;
 }
+
 
 function start_video() {
 

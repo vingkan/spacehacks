@@ -14,6 +14,7 @@ var m_textures  = require("textures");
 var m_scenes    = require("scenes");
 var m_material  = require("material");
 var m_cont 		= require("container");
+var m_gyro      = require("gyroscope");
 
 var m_util 		= require("util");
 var m_lights 	= require("lights");
@@ -116,11 +117,12 @@ function main_canvas_click(e) {
         }
         _previous_selected_obj = obj;
 
+        if (obj.name == "fullscreen")
+            toggleFullScreen();
+
         m_anim.apply_def(obj);
         m_anim.play(obj);
-        // m_anim.play(obj, function(data) {
-        // 	m_anim.stop(data);
-        // });
+
         console.log(obj);
         MissionLink._pushButton(BUTTON_MAPPING[obj.name]);
     }
@@ -141,16 +143,14 @@ function load_cb(data_id) {
     m_app.enable_controls();
     m_app.enable_camera_controls();
 
-    // place your code here
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere0"));
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere2"));
-    // m_anim.play(m_scenes.get_object_by_name("Icosphere4"));
-
-    //var error_cap = m_scenes.get_object_by_name("Text");
-    m_app.enable_camera_controls();
+    m_gyro.enable_camera_rotation();
 
     if (Boolean(get_user_media()))
         start_video();
+
+    // prints out the canvas
+    var stereoCanvas = m_textures.get_canvas_ctx(m_scenes.get_object_by_name("TV_R"), "Texture.001");
+    console.log(stereoCanvas.canvas);
 }
 
 function get_user_media() {
@@ -213,6 +213,21 @@ function start_video() {
             update_canvas();
         };
     };
+
+    function toggleFullScreen() {
+  		var doc = window.document;
+  		var docEl = doc.documentElement;
+	
+  		var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+  		var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+  		if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    		requestFullScreen.call(docEl);
+  		}
+  		else {
+    		cancelFullScreen.call(doc);
+  		}
+	}
 
     var fail_cb = function() {
         //var error_cap = m_scenes.get_object_by_name("Text");
