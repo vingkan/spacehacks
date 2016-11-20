@@ -1,5 +1,31 @@
 "use strict"
 
+var QueryString = function () {
+  // This function is anonymous, is executed immediately and 
+  // the return value is assigned to QueryString!
+  var query_string = {};
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+        // If first entry with this name
+    if (typeof query_string[pair[0]] === "undefined") {
+      query_string[pair[0]] = decodeURIComponent(pair[1]);
+        // If second entry with this name
+    } else if (typeof query_string[pair[0]] === "string") {
+      var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+      query_string[pair[0]] = arr;
+        // If third or later entry with this name
+    } else {
+      query_string[pair[0]].push(decodeURIComponent(pair[1]));
+    }
+  } 
+  return query_string;
+}();
+
+//var ROOM_KEY = window.opener.ROOM_KEY || false;
+var ROOM_KEY = QueryString.gid || false;
+
 // register the application module
 b4w.register("space_disaster", function(exports, require) {
 
@@ -55,7 +81,10 @@ var _dest_x_trans = 0;
 var _dest_z_trans = 0;
 
 // detect application mode
+var TIME_DELAY = 1000 / 24;
+var WAITING_DELAY = 1000;
 var DEBUG = (m_ver.type() === "DEBUG");
+var _previous_selected_obj = null;
 
 // automatically detect assets path
 //var APP_ASSETS_PATH = m_cfg.get_std_assets_path() + "space_disaster/";
@@ -64,6 +93,44 @@ console.log(APP_ASSETS_PATH);
 //http://localhost:8000/src/../deploy/assets/space_disaster/
 
 window.m_scs = m_scs;
+
+MissionLink.sync(window.ROOM_KEY);
+
+/**
+ * Support sketchy iFrame operations by donating to W3 today!
+ */
+function getIframeWindow(iframe_object) {
+  var doc;
+
+  if (iframe_object.contentWindow) {
+    return iframe_object.contentWindow;
+  }
+
+  if (iframe_object.window) {
+    return iframe_object.window;
+  } 
+
+  if (!doc && iframe_object.contentDocument) {
+    doc = iframe_object.contentDocument;
+  } 
+
+  if (!doc && iframe_object.document) {
+    doc = iframe_object.document;
+  }
+
+  if (doc && doc.defaultView) {
+   return doc.defaultView;
+  }
+
+  if (doc && doc.parentWindow) {
+    return doc.parentWindow;
+  }
+
+  return undefined;
+}
+
+/*var el = document.getElementById('targetFrame');
+getIframeWindow(el).putme();*/
 
 /**
  * export the method to initialize the app (called at the bottom of this file)
@@ -168,6 +235,16 @@ function load_cb(data_id) {
 
     //==========================================================================
 
+    //m_app.enable_controls();
+    m_app.enable_camera_controls();
+
+    //m_gyro.enable_camera_rotation();
+
+    init_screen();
+
+    var stereoCanvas = m_tex.get_canvas_ctx(m_scs.get_object_by_name("TV_R"), "Texture.001");
+
+
     // Third way to split screen: m_hmd.enable_hmd
     console.log("test0:" + m_scs.can_select_objects());
     if (m_hmd.check_browser_support())
@@ -181,6 +258,34 @@ function load_cb(data_id) {
     //==========================================================================
 
 
+}
+
+var init_screen = function() {
+    // var error_cap = m_scenes.get_object_by_name("Text");
+    // m_scenes.hide_object(error_cap);
+
+    var circuitWindow = document.getElementById('circuits');
+    getIframeWindow(circuitWindow).init(MissionLink.getRoomKey());
+
+    var obj = m_scs.get_object_by_name("TV_R");
+    var context = m_tex.get_canvas_ctx(obj, "Texture.001");
+    var update_canvas = function() {
+        db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').once('value', function(snap){
+            var dataURI = snap.val();
+            if(dataURI){
+                var imgObj = new Image();
+                imgObj.crossOrigin = 'anonymous';
+                imgObj.src = dataURI;
+                imgObj.onload = function(){
+                    context.drawImage(imgObj, 0, 0, context.canvas.width, context.canvas.height);
+                }
+            }
+        });
+        m_tex.update_canvas_ctx(obj, "Texture.001");
+        setTimeout(function() {update_canvas()}, TIME_DELAY);
+    }
+
+    update_canvas();
 }
 
 function register_gamepad(is_hmd) {
@@ -252,10 +357,16 @@ function register_mouse(is_hmd) {
     if (!is_hmd) {
         console.log("test2:" + m_scs.can_select_objects());
         // use pointerlock
-        var canvas_elem = m_cont.get_canvas();
+        /*var canvas_elem = m_cont.get_canvas();
         canvas_elem.addEventListener("mousedown", function(e) {
             m_mouse.request_pointerlock(canvas_elem);
-        }, false);
+        }, false);*/
+        var canvas_elem = document.getElementById('main_canvas_container');
+        document.addEventListener('click', function(e){
+            main_canvas_click(e);
+            /*var obj = m_scs.pick_object(canvas_elem.width/2, canvas_elem.height/2);
+            console.log(obj);*/
+        });
     } 
     else {
         // TODO: add menu and use mouse sensors
@@ -268,7 +379,7 @@ function register_mouse(is_hmd) {
             m_input.request_fullscreen_hmd();
             // canvas_click
             is_clicked = true;
-        })
+        });
 
         console.log("test4:" + m_scs.can_select_objects());
         var canvas_elem = document.getElementById('main_canvas_container');
@@ -422,6 +533,13 @@ function canvas_click(e) {
 
 }
 
+var BUTTON_MAPPING = {
+    'Circle': 'alpha',
+    'Square': 'beta',
+    'Triangle': 'gamma',
+    'Diamond': 'delta'
+}
+
 function main_canvas_click(e) {
     //console.log("main canvas" + e);
     if (e.preventDefault)
@@ -446,7 +564,7 @@ function main_canvas_click(e) {
             m_anim.play(obj);
 
             console.log(obj);
-            //MissionLink._pushButton(BUTTON_MAPPING[obj.name]);
+            MissionLink._pushButton(BUTTON_MAPPING[obj.name]);
         }
 
     }
@@ -454,5 +572,10 @@ function main_canvas_click(e) {
 
 });
 
-// import the app module and start the app by calling the init method
-b4w.require("space_disaster").init();
+window.initGame = function(roomKey){
+    window.ROOM_KEY = roomKey;
+    // import the app module and start the app by calling the init method
+    b4w.require("space_disaster").init();
+}
+
+initGame(window.ROOM_KEY);
