@@ -251,7 +251,6 @@ function renderCircuit(c, opt){
 	}
 
 	if(s.showNumber){
-		console.log(c)
 		var cidx = c.number + '';
 		if(c.number){
 			if(c.number === -1){
