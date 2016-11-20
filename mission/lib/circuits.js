@@ -20,7 +20,7 @@ function drawCircle(c, opt){
 	var s = {
 		fill: opt.fill || false,
 		stroke: opt.stroke || false,
-		dashes: opt.dashes || false
+		dashes: opt.dashes || [0, 0]
 	}
 	ctx.beginPath();
 	ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI, false);
@@ -29,13 +29,12 @@ function drawCircle(c, opt){
 		ctx.fill();
 	}
 	if(s.stroke){
-		if(s.dashes){
-			ctx.setLineDash(s.dashes);
-		}
+		ctx.setLineDash(s.dashes);
 		ctx.strokeStyle = s.stroke;
 		ctx.stroke();
 	}
 	ctx.closePath();
+	ctx.setLineDash([0, 0]);
 }
 
 function drawLine(i, f, opt){
@@ -92,7 +91,7 @@ var LED_COLOR = {
 }
 
 function renderCircuit(c, opt){
-
+	var opt = opt || {};
 	var s = {
 		showNumber: opt.showNumber || true
 	}
@@ -252,12 +251,18 @@ function renderCircuit(c, opt){
 	}
 
 	if(s.showNumber){
+		console.log(c)
 		var cidx = c.number + '';
-		if(c.number === -1){
-			cidx = '#'
+		if(c.number){
+			if(c.number === -1){
+				cidx = '#'
+			}
+			else{
+				cidx = c.number + '';
+			}
 		}
 		else{
-			cidx = c.number + '';
+			cidx = '#';
 		}
 		drawText(cidx, [850, 100], {
 			size: 80
