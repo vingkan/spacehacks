@@ -47,7 +47,7 @@
 				</li>
 				<li>
 					<button id="open-terminal" class="msg-button go-button"><i class="fa fa-file-text-o"></i> Go!</button>
-					Launch your Mission Control Terminal!
+					Launch your Mission Control Manual!
 				</li>
 			</ul>
 		</div>
@@ -58,7 +58,7 @@
 			<ul>
 				<li>
 					<button id="send-terminal" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
-					Send your partner the communication terminal.
+					Send your partner the Mission Control Manual.
 				</li>
 				<li>
 					<button id="send-controller2" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
@@ -120,7 +120,8 @@
 					});
 
 					ClickEvent('open-terminal', function(){
-						var controlWindow = window.open('mission/control.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+						//var controlWindow = window.open('mission/control.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+						window.open('https://vingkan.github.io/spacehacks/mission/InstructionManual.pdf', 'SpaceHacks');
 					});
 
 					// Player Selects Engineering
@@ -134,7 +135,8 @@
 						FB.ui({
 							method: 'send',
 							name: 'SpaceHacks Terminal',
-							link: window.location.origin + '/spacehacks/mission/control.html?gid=' + window.ROOM_KEY
+							//link: window.location.origin + '/spacehacks/mission/control.html?gid=' + window.ROOM_KEY
+							link: 'https://vingkan.github.io/spacehacks/mission/InstructionManual.pdf'
 						});
 					});
 
