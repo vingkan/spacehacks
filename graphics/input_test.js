@@ -30,7 +30,6 @@ var TIME_DELAY = 1000 / 24;
 var WAITING_DELAY = 1000;
 var DEBUG = (m_version.type() === "DEBUG");
 var _previous_selected_obj = null;
-var _cam_waiting_handle = null;
 
 MissionLink.sync(window.ROOM_KEY);
 
@@ -149,11 +148,9 @@ function load_cb(data_id) {
 
     m_gyro.enable_camera_rotation();
 
-    if (Boolean(get_user_media()))
-        start_video();
+    init_screen();
 
     var stereoCanvas = m_textures.get_canvas_ctx(m_scenes.get_object_by_name("TV_R"), "Texture.001");
-    console.log(stereoCanvas);
 
 }
 
@@ -172,63 +169,32 @@ function toggleFullScreen() {
   }
 }
 
-function get_user_media() {
-    if (Boolean(navigator.getUserMedia))
-        return navigator.getUserMedia.bind(navigator);
-    else if (Boolean(navigator.webkitGetUserMedia))
-        return navigator.webkitGetUserMedia.bind(navigator);
-    else if (Boolean(navigator.mozGetUserMedia))
-        return navigator.mozGetUserMedia.bind(navigator);
-    else if (Boolean(navigator.msGetUserMedia))
-        return navigator.msGetUserMedia.bind(navigator);
-    else
-        return null;
-}
+var init_screen = function() {
+    // var error_cap = m_scenes.get_object_by_name("Text");
+    // m_scenes.hide_object(error_cap);
 
+    var circuitWindow = document.getElementById('circuits');
+    getIframeWindow(circuitWindow).init(MissionLink.getRoomKey());
 
-function start_video() {
-
-    if (_cam_waiting_handle)
-        clearTimeout(_cam_waiting_handle);
-
-    var user_media = get_user_media();
-    var media_stream_constraint = {
-        video: { width: 1280, height: 720 }
-    };
-    var success_cb = function(local_media_stream) {
-        // var error_cap = m_scenes.get_object_by_name("Text");
-        // m_scenes.hide_object(error_cap);
-
-        var circuitWindow = document.getElementById('circuits');
-        getIframeWindow(circuitWindow).init(MissionLink.getRoomKey());
-
-        var obj = m_scenes.get_object_by_name("TV_R");
-        var context = m_textures.get_canvas_ctx(obj, "Texture.001");
-        var update_canvas = function() {
-            db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').once('value', function(snap){
-                var dataURI = snap.val();
-                if(dataURI){
-                    var imgObj = new Image();
-                    imgObj.crossOrigin = 'anonymous';
-                    imgObj.src = dataURI;
-                    imgObj.onload = function(){
-                        context.drawImage(imgObj, 0, 0, context.canvas.width, context.canvas.height);
-                    }
+    var obj = m_scenes.get_object_by_name("TV_R");
+    var context = m_textures.get_canvas_ctx(obj, "Texture.001");
+    var update_canvas = function() {
+        db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').once('value', function(snap){
+            var dataURI = snap.val();
+            if(dataURI){
+                var imgObj = new Image();
+                imgObj.crossOrigin = 'anonymous';
+                imgObj.src = dataURI;
+                imgObj.onload = function(){
+                    context.drawImage(imgObj, 0, 0, context.canvas.width, context.canvas.height);
                 }
-            });
-            m_textures.update_canvas_ctx(obj, "Texture.001");
-            setTimeout(function() {update_canvas()}, TIME_DELAY);
-        }
+            }
+        });
+        m_textures.update_canvas_ctx(obj, "Texture.001");
+        setTimeout(function() {update_canvas()}, TIME_DELAY);
+    }
 
-        update_canvas();
-    };
-
-    var fail_cb = function() {
-        //var error_cap = m_scenes.get_object_by_name("Text");
-        _cam_waiting_handle = setTimeout(start_video, WAITING_DELAY);
-    };
-
-    user_media(media_stream_constraint, success_cb, fail_cb);
+    update_canvas();
 }
 
 });
