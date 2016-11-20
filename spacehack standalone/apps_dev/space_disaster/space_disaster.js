@@ -274,7 +274,8 @@ function register_mouse(is_hmd) {
         var canvas_elem = document.getElementById('main_canvas_container');
         console.log("Getting: " + canvas_elem.height + " height, " +canvas_elem.width +" width");
 
-        document.addEventListener('click', function(e){
+        window.addEventListener('click', function(e){
+            e.preventDefault();
             console.log('CLICKED FRIENDS');
             var obj = m_scs.pick_object(canvas_elem.width/2, canvas_elem.height/2);
             console.log(obj);

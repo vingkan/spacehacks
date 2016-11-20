@@ -2959,9 +2959,13 @@ exports.get_subs = get_subs;
  * Return first subscene matching given type
  * @methodOf scenes
  */
-function get_subs(scene, type) {
+function get_subs(scene, type, flag) {
     var graph = scene._render.graph;
-    return m_scgraph.find_subs(graph, type);
+    var res = m_scgraph.find_subs(graph, type);
+    if(flag){
+        console.log(graph, res, type);
+    }
+    return res;
 }
 
 /**
@@ -4265,8 +4269,11 @@ exports.update_force_scene = function(scene, obj) {
     return false;
 }
 
+window.VINTYPE = 15;
+
 exports.pick_color = function(scene, canvas_x, canvas_y) {
-    var subs_color_pick = get_subs(scene, m_subs.COLOR_PICKING);
+    //var subs_color_pick = get_subs(scene, m_subs.COLOR_PICKING);
+    var subs_color_pick = get_subs(scene, window.VINTYPE);
     if (subs_color_pick) {
         // NOTE: rewrite camera.proj_matrix and camera.view_proj_matrix
         // restoring not needed
@@ -4301,8 +4308,11 @@ exports.pick_color = function(scene, canvas_x, canvas_y) {
                     subs_color_pick.camera.framebuffer, 0, 0);
         else
             return null;
-    } else
+    } else {
         m_print.error("Object Selection is not available on the scene");
+        //get_subs(scene, m_subs.COLOR_PICKING, true);
+        get_subs(scene, window.VINTYPE, true);
+    }
 
     return null;
 }
