@@ -3,17 +3,20 @@
 	<head>
 		<title>SpaceHacks</title>
 		<link rel="stylesheet" type="text/css" href="style/reset.css">
-		<link rel="stylesheet/less" type="text/css" href="style/readout.less">
+		<link rel="stylesheet/less" type="text/css" href="style/companion.less">
 		<script type="text/javascript" src="lib/less.min.js"></script>
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
 		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.1/howler.min.js"></script>
 	</head>
-
 	<body>
 
-		<textarea id="sender" placeholder="Write messages here."></textarea>
+		<button id="left">Left</button>
+		<button id="right">Right</button>
+		<button id="check">Check</button>
+		<button id="view">View</button>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/main.js"></script>
@@ -45,12 +48,38 @@
 
 			MissionLink.sync(QueryString.gid);
 
-			var sender = document.getElementById('sender');
-			sender.addEventListener('keypress', function(e){
-				if(e.keyCode === 13){
-					MissionLink.sendMessage(sender.value);
-				}
+			function ClickEvent(id, fn){
+				document.getElementById(id).addEventListener('click', function(e){fn(e)});
+			}
+
+			ClickEvent('left', function(e){
+				MissionLink._pushButton('alpha');
 			});
+
+			ClickEvent('check', function(e){
+				MissionLink._pushButton('beta');
+			});
+
+			ClickEvent('right', function(e){
+				MissionLink._pushButton('gamma');
+			});
+
+			ClickEvent('view', function(e){
+				MissionLink._pushButton('delta');
+			});
+
+			var buttonSound = new Howl({
+				src: ['./style/sound/digital_button.mp3']
+			});
+
+			function playSound(){
+				buttonSound.play();
+			}
+
+			MissionLink.alphaCallback = playSound;
+			MissionLink.betaCallback = playSound;
+			MissionLink.gammaCallback = playSound;
+			MissionLink.deltaCallback = playSound;
 
 		</script>
 		
