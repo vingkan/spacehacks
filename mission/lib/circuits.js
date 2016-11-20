@@ -50,7 +50,7 @@ function drawCircle(c, opt){
 
 function drawLine(i, f, opt){
 	var s = {
-		stroke: opt.stroke || 'white',
+		stroke: opt.stroke || 'gray',
 		offset: opt.offset || 0
 	}
 	ctx.beginPath();
@@ -91,8 +91,6 @@ var NODE_POS = [
 ];
 
 var LETTER_POS = ['a', 'b', 'c', 'd', 'e'];
-
-var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
 
 var BASE_COLOR = '#20221f';
 var CIRCUIT_GREEN = '#0cdc56';
@@ -197,6 +195,8 @@ function renderCircuit(c, opt){
 	var s = {
 		showNumber: opt.showNumber || true
 	}
+
+	var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
 
 	/*drawRect({
 		x: 0,
