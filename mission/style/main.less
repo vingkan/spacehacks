@@ -75,7 +75,7 @@ p{
 li{
 	font-size: 1.0 * @tx;
 	line-height: 1.25 * @tx;
-	list-style: disc;
+	list-style: none;
 	margin-left: 1.5 * @tx;
 }
 
@@ -119,6 +119,13 @@ div.centerbox {
 	text-align: center;
 }
 
+div.blackbox {
+	background: @Charcoal;
+	padding: 15px 0;
+	margin: 15px auto;
+	display: none;
+}
+
 input, button, select {
 	outline: none;
 	border: none;
@@ -128,7 +135,7 @@ button {
 
 	display: inline-block;
 	//margin: 10px auto;
-	margin: 10px;
+	margin: 15px;
 
 	width: 250px;
 	height: 50px;
@@ -145,6 +152,23 @@ button {
 		cursor: pointer;
 		background: lighten(@SpaceBlue, 10%);
 	}
+
+}
+
+@FacebookBlue: #0080FF;
+
+button.msg-button {
+
+	background: @FacebookBlue;
+
+	.BodyFont();
+
+	width: 100px;
+	height: 25px;
+	line-height: 20px;
+	font-size: 12px;
+	vertical-align: middle;
+
 
 }
 
