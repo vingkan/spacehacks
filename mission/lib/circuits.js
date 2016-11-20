@@ -92,6 +92,8 @@ var NODE_POS = [
 
 var LETTER_POS = ['a', 'b', 'c', 'd', 'e'];
 
+var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
+
 var BASE_COLOR = '#20221f';
 var CIRCUIT_GREEN = '#0cdc56';
 var LED_COLOR = {
@@ -99,6 +101,76 @@ var LED_COLOR = {
 	blue: '#0bebe5',
 	green: '#0cdc56',
 	yellow: '#d3eb37'
+}
+
+var PATHS = {
+	a: {
+		b: [[0, 100], [200, 0]],
+		c: []
+	},
+	b: {
+		c: []
+	}
+}
+
+function getMidpoint(s1, s2){
+	// Assumes vertical or horizontal line segments
+	if(s1.x === s2.x){
+		var hi = (s2.y > s1.y) ? s2.y : s1.y;
+		var lo = (s2.y < s1.y) ? s2.y : s1.y;
+		return {x: s1.x, y: (hi + lo) / 2};
+	}
+	else{
+		var hi = (s2.x > s1.x) ? s2.x : s1.x;
+		var lo = (s2.x < s1.x) ? s2.x : s1.x;
+		return {x: (hi + lo) / 2, y: s1.y};
+	}
+}
+
+function drawCircuitPath(pathList, breakPath, wireColor){
+	var needsBreaking = true;
+	var i = false;
+	for(var p = 0; p < pathList.length; p++){
+		var f = pathList[p];
+		if(i){
+			drawLine([i.x, i.y], [f.x, f.y], {
+				stroke: wireColor
+			});
+			if(breakPath && needsBreaking){
+				var mid = getMidpoint(i, f);
+					mid.r = 10;
+				drawCircle(mid, {
+					fill: BASE_COLOR
+				});
+				needsBreaking = false;
+			}
+			if(!needsBreaking && f.bridged){
+				// ASSUMES BRIDGE IS ON HORIZONTAL SEGMENT
+				var mid = getMidpoint(i, f);
+				var bridgeSize = 50;
+				// Stop before bridge
+				drawLine([i.x, i.y], [mid.x - bridgeSize, f.y], {
+					stroke: wireColor
+				});
+				// Bridge
+				drawLine([mid.x - bridgeSize, f.y], [mid.x - bridgeSize, f.y + bridgeSize], {
+					stroke: wireColor
+				});
+				drawLine([mid.x - bridgeSize, f.y + bridgeSize], [mid.x + bridgeSize, f.y + bridgeSize], {
+					stroke: wireColor
+				});
+				drawLine([mid.x + bridgeSize, f.y + bridgeSize], [mid.x + bridgeSize, f.y], {
+					stroke: wireColor
+				});
+				// Exit after bridge
+				drawLine([mid.x + bridgeSize, f.y], [f.x, f.y], {
+					stroke: wireColor
+				});
+				// Fuck Königsberg.
+			}
+		}
+		i = f;
+	}
 }
 
 function renderCircuit(c, opt){
@@ -155,92 +227,12 @@ function renderCircuit(c, opt){
 		stroke: 'gray'
 	});*/
 
-	var USED_IDX = [];
-
-	/*for(var n in c.nodes){
-		var node = c.nodes[n];
-		if(node){
-			var placed = false;
-			while(!placed){
-				var idx = Math.floor((NODE_POS.length * Math.random()));
-				if(USED_IDX.indexOf(idx) > -1){
-
-				}
-				else{
-					USED_IDX.push(idx);
-					placed = true;
-					c.nodes[n] = {pos: NODE_POS[idx]};
-					
-				}
-			}
-		}
-	}*/
-
-	var WIRE_INCREMENT = 1;
-	var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
 
 	for(var w = 0; w < c.wires.length; w++){
-		var DW = WIRE_INCREMENT * 10;
+		var wire = c.wires[w];
+		var pathList = PATHS[wire.node1][wire.nodes];
 		var wireColor = WIRE_COLORS.pop();
-		var path = c.wires[w];
-		var i = NODE_POS[LETTER_POS.indexOf(path.node1)];
-		var f = NODE_POS[LETTER_POS.indexOf(path.node2)];
-		var brk = {
-			x: 0,
-			y: 0
-		}
-
-		if(!path.broken){
-
-			if(i.x === f.x || i.y == f.y){
-				drawLine([i.x, i.y], [f.x, f.y], {
-					stroke: wireColor
-				});
-				if(i.x === f.x){
-					var diff = f.y - i.y;
-					var dir = diff / Math.abs(diff);
-					brk.x = i.x;
-					brk.y = i.y + (WIRE_INCREMENT * 15 * dir);
-				}
-				else{
-					var diff = f.x - i.x;
-					var dir = diff / Math.abs(diff);
-					brk.x = i.x + (WIRE_INCREMENT * 15 * dir);
-					brk.y = i.y;
-				}
-			}
-			else{
-				drawLine([i.x, i.y], [i.x, f.y], {
-					stroke: wireColor
-				});
-				drawLine([i.x, f.y], [f.x, f.y], {
-					stroke: wireColor
-				});
-				brk.x = i.x;
-				brk.y = f.y;
-			}
-
-		}
-
-		drawCircle({
-			x: i.x,
-			y: i.y,
-			r: 40 + (WIRE_INCREMENT * 20)
-		}, {
-			stroke: wireColor,
-			dashes: path.broken ? [5, 15] : false
-		});
-
-		drawCircle({
-			x: f.x,
-			y: f.y,
-			r: 40 + (WIRE_INCREMENT * 20)
-		}, {
-			stroke: wireColor,
-			dashes: path.broken ? [5, 15] : false
-		});
-
-		WIRE_INCREMENT++;
+		drawCircuitPath(pathList, wire.broken, wireColor);
 	}
 
 	for(var n in c.nodes){
@@ -282,3 +274,74 @@ function renderCircuit(c, opt){
 	sendCanvasImage();
 
 }
+
+renderCircuit({"nodes":{"a":true,"b":true,"c":true,"d":true,"e":true},"led":"yellow","wires":[{"node1":"a","node2":"d","broken":false},{"node1":"a","node2":"e","broken":false},{"node1":"b","node2":"e","broken":false},{"node1":"d","node2":"e","broken":false}],"number":-1});
+
+
+// OLD WIRE DRAWING METHOD
+
+/*var WIRE_INCREMENT = 1;
+
+for(var w = 0; w < c.wires.length; w++){
+	var DW = WIRE_INCREMENT * 10;
+	var wireColor = WIRE_COLORS.pop();
+	var path = c.wires[w];
+	var i = NODE_POS[LETTER_POS.indexOf(path.node1)];
+	var f = NODE_POS[LETTER_POS.indexOf(path.node2)];
+	var brk = {
+		x: 0,
+		y: 0
+	}
+
+	if(!path.broken){
+
+		if(i.x === f.x || i.y == f.y){
+			drawLine([i.x, i.y], [f.x, f.y], {
+				stroke: wireColor
+			});
+			if(i.x === f.x){
+				var diff = f.y - i.y;
+				var dir = diff / Math.abs(diff);
+				brk.x = i.x;
+				brk.y = i.y + (WIRE_INCREMENT * 15 * dir);
+			}
+			else{
+				var diff = f.x - i.x;
+				var dir = diff / Math.abs(diff);
+				brk.x = i.x + (WIRE_INCREMENT * 15 * dir);
+				brk.y = i.y;
+			}
+		}
+		else{
+			drawLine([i.x, i.y], [i.x, f.y], {
+				stroke: wireColor
+			});
+			drawLine([i.x, f.y], [f.x, f.y], {
+				stroke: wireColor
+			});
+			brk.x = i.x;
+			brk.y = f.y;
+		}
+
+	}
+
+	drawCircle({
+		x: i.x,
+		y: i.y,
+		r: 40 + (WIRE_INCREMENT * 20)
+	}, {
+		stroke: wireColor,
+		dashes: path.broken ? [5, 15] : false
+	});
+
+	drawCircle({
+		x: f.x,
+		y: f.y,
+		r: 40 + (WIRE_INCREMENT * 20)
+	}, {
+		stroke: wireColor,
+		dashes: path.broken ? [5, 15] : false
+	});
+
+	WIRE_INCREMENT++;
+}*/
