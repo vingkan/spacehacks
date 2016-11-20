@@ -8,6 +8,8 @@
 
 @Charcoal: #1a1a1a;
 
+@SpaceBlue: #0bebe5;
+
 /*--------------------------------------------*/
 /*---> FONTS <--------------------------------*/
 /*--------------------------------------------*/
@@ -100,9 +102,23 @@ body{
 /*---> FORM <----------------------------------*/
 /*--------------------------------------------*/
 
-input, button, select{
+input, button, select {
 	outline: none;
 	border: none;
+}
+
+button {
+
+	width: 400px;
+	height: 100px;
+	line-height: 100px;
+
+	background: @SpaceBlue;
+
+	&:hover {
+		cursor: pointer;
+	}
+
 }
 
 /*--------------------------------------------*/
