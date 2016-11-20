@@ -21,37 +21,40 @@
 
 		<script type="text/javascript">
 
-			var display = document.getElementById('display');
+			function init(roomKey){
 
-			MissionLink.sync();
+				MissionLink.sync(roomKey);
 
-			var originalMsg = 'Messages will appear here.';
+				var display = document.getElementById('display');
+				var originalMsg = 'Messages will appear here.';
 
-			function transformMessage(msg){
-				var mode = MissionLink.getReadoutMode();
-				var transformer = TRANSFORMERS[mode];
-				if(transformer){
-					return transformer(msg);
+				function transformMessage(msg){
+					var mode = MissionLink.getReadoutMode();
+					var transformer = TRANSFORMERS[mode];
+					if(transformer){
+						return transformer(msg);
+					}
+					else{
+						return msg;
+					}
 				}
-				else{
-					return msg;
+
+				function printMessage(msg){
+					originalMsg = msg;
+					display.innerText = transformMessage(msg);
 				}
+
+				var msgRef = db.ref(MissionLink.getRoomKey() + '/messages').orderByChild('timestamp').startAt(Date.now());
+				msgRef.on('child_added', function(snap){
+					var val = snap.val();
+					printMessage(val.message);
+				});
+
+				db.ref(MissionLink.getRoomKey() + '/readout').on('value', function(r){
+					printMessage(originalMsg);
+				});
+
 			}
-
-			function printMessage(msg){
-				originalMsg = msg;
-				display.innerText = transformMessage(msg);
-			}
-
-			var msgRef = db.ref('messages').orderByChild('timestamp').startAt(Date.now());
-			msgRef.on('child_added', function(snap){
-				var val = snap.val();
-				printMessage(val.message);
-			});
-
-			db.ref('readout').on('value', function(r){
-				printMessage(originalMsg);
-			});
 
 		</script>
 		

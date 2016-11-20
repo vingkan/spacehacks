@@ -7,7 +7,7 @@
 		<!-- LESS JS <script type="text/javascript" src="lib/less.min.js"></script> -->
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 		<style>
 
@@ -25,54 +25,76 @@
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/circuits.js"></script>
+		<script type="text/javascript" src="lib/circuitlogic.js"></script>
 
 		<script type="text/javascript">
 
-			var FIDX = 0;
-			var boards = [];
+			window.init = function(roomKey){
 
-			render();
+				MissionLink.sync(roomKey);
 
-			function render(){
-				FIDX = (boards.length + FIDX) % boards.length;
-				var newCircuit = boards[FIDX];
-				if(newCircuit){
-					renderCircuit(newCircuit);
-				}
-				else{
-					var circuit = {
-						nodes: {
-							a: true,
-							b: true,
-							c: true,
-							d: false,
-							e: false
-						},
-						led: 'red',
-						wires: [
-							{node1: 'a', node2: 'c', broken: false},
-							{node1: 'c', node2: 'b', broken: true}
-						]
+				var challenge = generateChallenge();
+				var original = challenge.original;
+
+				var FIDX = -1;
+				var boards = challenge.options;
+
+				renderCircuit(original, {
+					showNumber: false
+				});
+
+				function render(){
+					FIDX = (boards.length + FIDX) % boards.length;
+					var newCircuit = boards[FIDX];
+					if(newCircuit){
+						renderCircuit(newCircuit);
 					}
-					renderCircuit(circuit);
+					else{
+						alert('INDEX ERROR');
+					}
 				}
+
+				window.stepBackward = function(){
+					FIDX--;
+					render();
+				}
+
+				window.stepForward = function(){
+					FIDX++;
+					render();
+				}
+
+				MissionLink.alphaCallback = stepBackward;
+				MissionLink.gammaCallback = stepForward;
+
+				MissionLink.betaCallback = function(){
+					var res = checkCircuit(original, boards[FIDX]);
+					if(res){
+						clearCanvas();
+						drawText('Victory!', [315, 500], {
+							size: 100,
+							fill: LED_COLOR.green
+						});
+						sendCanvasImage();
+						MissionLink.unsync();
+					}
+					else{
+						clearCanvas();
+						drawText('Strike X', [315, 500], {
+							size: 100,
+							fill: LED_COLOR.red
+						});
+						sendCanvasImage();
+					}
+				}
+
+				MissionLink.deltaCallback = function(){
+					renderCircuit(original, {
+						showNumber: false
+					});
+				}
+
 			}
-
-			window.stepBackward = function(){
-				FIDX--;
-				render();
-			}
-
-			window.stepForward = function(){
-				FIDX++;
-				render();
-			}
-
-			MissionLink.sync();
-
-			MissionLink.alphaCallback = stepBackward;
-			MissionLink.betaCallback = false;
-			MissionLink.gammaCallback = stepForward;
 
 		</script>
 
