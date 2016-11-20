@@ -22,9 +22,9 @@ function generateCircuit() {
     var possibleEdges = getPossibleEdges(nNodes);
     var edges = [];
     for (var i = 0; i < possibleEdges.length; i++) {
-        if (Math.random >= 0.5) {
+        if (Math.random() >= 0.5) {
             var edge = possibleEdges[i];
-            edge.broken = Math.random >= 0.5 ? true : false;
+            edge.broken = Math.random() >= 0.5 ? true : false;
             edges.push(edge);
         }
     }
@@ -120,8 +120,6 @@ function countCutWires(circuit) {
 }
 
 function checkCircuit(original, replacement) {
-    console.log(original);
-    console.log(replacement);
     // The lights on the original board and the replacement board are both red
     if (original.led === 'red' && replacement.led === 'red') {
         // There are 4 or more nodes on the replacement board
@@ -269,41 +267,180 @@ function checkCircuits(target, circuits) {
     return false;
 }
 
-function generateCircuits(target, nCircuits) {
+function generateCircuits(original, answer, nCircuits) {
     var circuits = [];
     for (var i = 0; i < nCircuits; i++) {
         circuits.push(generateCircuit);
     }
 
-    while (true) {
-        var answerCircuit = generateCircuit();
-        if (checkCircuit(target, answerCircuit)) {
-            var randIndex = Math.floor(Math.random() * nCircuits);
-            circuits[randIndex] = answerCircuit;
-            return circuits;
+    var randIndex = Math.floor(Math.random() * nCircuits);
+    circuits[randIndex] = answer;
+    return circuits;
+}
+
+function setNNodes(circuit, nNodes) {
+    var newCircuit = {
+        nodes: {
+            a: nNodes >= 1,
+            b: nNodes >= 2,
+            c: nNodes >= 3,
+            d: nNodes >= 4,
+            e: nNodes >= 5
+        },
+        led: circuit.led,
+        wires: circuit.wires
+    }
+    return newCircuit;
+}
+
+function setRandomWires(circuit) {
+    var newCircuit = circuit;
+    var possibleEdges = getPossibleEdges(countNodes(circuit));
+    var edges = [];
+    for (var i = 0; i < possibleEdges.length; i++) {
+        if (Math.random() >= 0.5) {
+            var edge = possibleEdges[i];
+            edge.broken = false;
+            edges.push(edge);
         }
     }
+    newCircuit.wires = edges;
+    return newCircuit;
 }
 
-var circuit = {
-	nodes: {
-		a: true,
-		b: true,
-		c: true,
-		d: true,
-		e: false
-	},
-	led: 'red',
-	wires: [
-		{node1: 'a', node2: 'c', broken: false},
-		{node1: 'c', node2: 'b', broken: false},
-        {node1: 'a', node2: 'b', broken: false},
-        {node1: 'a', node2: 'd', broken: false},
-        {node1: 'b', node2: 'd', broken: false}
-	]
+function setCutWires(circuit, nCutWires) {
+    var newCircuit = circuit;
+    var possibleEdges = getPossibleEdges(countNodes(circuit));
+    for (var i = 0; i < circuit.wires.length; i++) {
+        var wire = circuit.wires[i];
+        function isEqualEdge(edge) {
+            return edge.node1 === wire.node1 && edge.node2 === wire.node2;
+        }
+        var matchingIndex = possibleEdges.findIndex(isEqualEdge);
+        possibleEdges.splice(matchingIndex, 1);
+    }
+    for (var i = 0; i < nCutWires; i++) {
+        if (possibleEdges.length <= 0) {
+            // FAIL, TOO MANY WIRES ALREADY TAKEN
+            return newCircuit;
+        }
+        var edge = possibleEdges.pop();
+        newCircuit.wires.push({
+            node1: edge.node1,
+            node2: edge.node2,
+            broken: true
+        });
+    }
+    return newCircuit;
 }
 
-console.log(countNodes(circuit));
-renderCircuit(circuit);
-var circuits = generateCircuits(circuit, 10);
-console.log(circuits);
+function setWires(circuit, nCutWires, nCycles) {
+    var newCircuit = circuit;
+    if (nCycles === undefined) {
+        while (countCutWires(newCircuit) !== nCutWires) {
+            newCircuit = setRandomWires(newCircuit);
+            newCircuit = setCutWires(newCircuit, nCutWires);
+        }
+        return newCircuit;
+    }
+    while (countCutWires(newCircuit) !== nCutWires || countCycles(newCircuit) !== nCycles) {
+        newCircuit = setRandomWires(newCircuit);
+        newCircuit = setCutWires(newCircuit, nCutWires);
+    }
+    return newCircuit;
+}
+
+function generateSolutionPair() {
+    var original = generateCircuit();
+    var answer = generateCircuit();
+
+    // 16 solution types
+    var solutionType = Math.floor(Math.random()*4);//Math.floor(Math.random()*16);
+    if (solutionType === 0) {
+        original.led = 'red';
+        answer.led = 'red';
+        answer = setNNodes(answer, Math.floor(Math.random()*2)+4);
+        answer = setWires(answer, 0, 2);
+    }
+    else if (solutionType === 1) {
+        original.led = 'red';
+        answer.led = 'red';
+        original = setNNodes(original, Math.floor(Math.random()*3)+3);
+        answer = setNNodes(answer, Math.floor(Math.random()*2)+4);
+        answer = setWires(answer, 1, 1);
+    }
+    else if (solutionType === 2) {
+        original.led = Math.random() >= 0.5 ? 'blue' : 'green';
+        answer.led = 'red';
+        original = setNNodes(original, 3);
+        answer = setNNodes(answer, Math.floor(Math.random*3)+3);
+        answer = setWires(answer, 2, 0);
+    }
+    else if (solutionType === 3) {
+        original.led = Math.random() >= 0.5 ? 'blue' : 'green';
+        answer.led = 'red';
+        original = setNNodes(original, 3);
+        original = setWires(original, 0, undefined);
+        answer = setNNodes(answer, Math.floor(Math.random*3)+3);
+        answer = setWires(original, 0, 1);
+    }
+    // else if (solutionType === 4) {
+    //     original.led = Math.random() >= 0.5 ? 'blue' : 'green';
+    //     answer.led = 'red';
+    //     original = setNNodes(original, 2);
+    //     original = setWires(original, 0, 0);
+    //
+    // }
+
+    return {original: original, answer: answer};
+}
+
+function generateChallenge() {
+    var solutionPair = generateSolutionPair();
+    var options = generateCircuits(solutionPair.original, solutionPair.answer, 20);
+    return {original: solutionPair.original, options: options};
+}
+
+// var solutionPair = generateSolutionPair();
+// console.log(checkCircuit(solutionPair.original, solutionPair.answer));
+
+// var original = {
+// 	nodes: {
+// 		a: true,
+// 		b: true,
+// 		c: true,
+// 		d: true,
+// 		e: false
+// 	},
+// 	led: 'red',
+// 	wires: [
+// 		{node1: 'a', node2: 'c', broken: false},
+// 		{node1: 'c', node2: 'b', broken: false},
+//         {node1: 'a', node2: 'b', broken: false},
+//         {node1: 'a', node2: 'd', broken: false},
+//         {node1: 'b', node2: 'd', broken: false}
+// 	]
+// }
+//
+// var answer = {
+// 	nodes: {
+// 		a: true,
+// 		b: true,
+// 		c: true,
+// 		d: true,
+// 		e: false
+// 	},
+// 	led: 'red',
+// 	wires: [
+// 		{node1: 'a', node2: 'c', broken: false},
+// 		{node1: 'c', node2: 'b', broken: false},
+//         {node1: 'a', node2: 'b', broken: false},
+//         {node1: 'a', node2: 'd', broken: false},
+//         {node1: 'b', node2: 'd', broken: false}
+// 	]
+// }
+//
+// console.log(checkCircuit(original, answer));
+// renderCircuit(circuit);
+// var circuits = generateCircuits(circuit, 10);
+// console.log(circuits);
