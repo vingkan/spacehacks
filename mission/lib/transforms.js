@@ -1,19 +1,20 @@
-var TRANSFORMERS = {
-	var pronouns = ["I", "me", "we", "us", "you", "she"
-									"her", "he", "him", "it", "they", "them",
-									"that", "which", "who", "whom", "whichever",
-									"whoever", "whomever", "this", "these",
-									"that", "those", "anybody", "anyone", "anything",
-									"each", "either", "everybody", "everyone",
-									"everything", "neither", "nobody", "no one",
-									"somebody", "someone", "something", "few", "many",
-									"several", "all", "any", "most", "none", "some",
-									"myself", "ourselves", "yourself", "yourselves",
-									"himself", "herself", "itself", "themselves",
-									"my", "your", "his", "her", "its", "our", "their",
-									"mine", "yours", "hers", "ours", "theirs"];
+var pronouns = ["I", "me", "we", "us", "you", "she",
+				"her", "he", "him", "it", "they", "them",
+				"that", "which", "who", "whom", "whichever",
+				"whoever", "whomever", "this", "these",
+				"that", "those", "anybody", "anyone", "anything",
+				"each", "either", "everybody", "everyone",
+				"everything", "neither", "nobody", "no one",
+				"somebody", "someone", "something", "few", "many",
+				"several", "all", "any", "most", "none", "some",
+				"myself", "ourselves", "yourself", "yourselves",
+				"himself", "herself", "itself", "themselves",
+				"my", "your", "his", "her", "its", "our", "their",
+				"mine", "yours", "hers", "ours", "theirs"];
 
 // not exhaustive, certain words removed just in case of usability
+
+var TRANSFORMERS = {
 
 	normal: function(msg){
 		return msg;
@@ -29,7 +30,7 @@ var TRANSFORMERS = {
 			}
 		}
 		return nMsg;
-	}
+	},
 
 	shuffleWords: function(msg) {
 		var words = msg.split(" ");
@@ -40,12 +41,12 @@ var TRANSFORMERS = {
 			words[rand] = temp;
 		}
 		return words.join(" ");
-	}
+	},
 
 	reverseWords: function(msg) {
 		msg.split("").reverse().join("").split(" ").reverse().join(" ");
 		return msg;
-	}
+	},
 
 	removePronouns: function(msg) {
 		var words = msg.split(" ");
@@ -58,6 +59,5 @@ var TRANSFORMERS = {
 		}
 		return words.join(" ");
 	}
-
 
 }
