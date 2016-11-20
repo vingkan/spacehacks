@@ -80,6 +80,8 @@ var NODE_POS = [
 	{x: 750, y: 800, node: 'EMPTY'}
 ];
 
+var LETTER_POS = ['a', 'b', 'c', 'd', 'e'];
+
 var BASE_COLOR = '#20221f';
 var CIRCUIT_GREEN = '#0cdc56';
 var LED_COLOR = {
@@ -89,7 +91,11 @@ var LED_COLOR = {
 	yellow: '#d3eb37'
 }
 
-function renderCircuit(c){
+function renderCircuit(c, opt){
+
+	var s = {
+		showNumber: opt.showNumber || true
+	}
 
 	drawRect({
 		x: 0,
@@ -141,7 +147,7 @@ function renderCircuit(c){
 
 	var USED_IDX = [];
 
-	for(var n in c.nodes){
+	/*for(var n in c.nodes){
 		var node = c.nodes[n];
 		if(node){
 			var placed = false;
@@ -158,7 +164,7 @@ function renderCircuit(c){
 				}
 			}
 		}
-	}
+	}*/
 
 	var WIRE_INCREMENT = 1;
 	var WIRE_COLORS = ['purple', 'brown', 'blue', 'green', 'white', 'pink', 'red', 'orange', 'yellow', 'turquoise'];
@@ -167,8 +173,8 @@ function renderCircuit(c){
 		var DW = WIRE_INCREMENT * 10;
 		var wireColor = WIRE_COLORS.pop();
 		var path = c.wires[w];
-		var i = c.nodes[path.node1].pos;
-		var f = c.nodes[path.node2].pos;
+		var i = NODE_POS[LETTER_POS.indexOf(path.node1)];
+		var f = NODE_POS[LETTER_POS.indexOf(path.node2)];
 		var brk = {
 			x: 0,
 			y: 0
@@ -230,7 +236,7 @@ function renderCircuit(c){
 	for(var n in c.nodes){
 		var node = c.nodes[n];
 		if(node){
-			var pos = node.pos;
+			var pos = NODE_POS[LETTER_POS.indexOf(n)];
 			drawCircle({
 				x: pos.x,
 				y: pos.y,
@@ -243,6 +249,19 @@ function renderCircuit(c){
 				fill: BASE_COLOR
 			});
 		}
+	}
+
+	if(s.showNumber){
+		var cidx = c.number + '';
+		if(c.number === -1){
+			cidx = '#'
+		}
+		else{
+			cidx = c.number + '';
+		}
+		drawText(cidx, [850, 100], {
+			size: 80
+		});
 	}
 
 	var dataURI = canvas.toDataURL();
