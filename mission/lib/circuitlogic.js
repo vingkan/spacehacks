@@ -42,7 +42,8 @@ function generateCircuit() {
             e: nNodes >= 5
         },
         led: color,
-        wires: edges
+        wires: edges,
+        number: -1
     }
     return circuit;
 }
@@ -268,10 +269,13 @@ function checkCircuits(target, circuits) {
 function generateCircuits(original, answer, nCircuits) {
     var circuits = [];
     for (var i = 0; i < nCircuits; i++) {
-        circuits.push(generateCircuit());
+        var circ = generateCircuit();
+        circ.number = (i+1);
+        circuits.push(circ);
     }
 
     var randIndex = Math.floor(Math.random() * nCircuits);
+    answer.number = (randIndex+1);
     circuits[randIndex] = answer;
     return circuits;
 }
@@ -516,7 +520,7 @@ function generateSolutionPair() {
 
 function generateChallenge() {
     var solutionPair = generateSolutionPair();
-    var options = generateCircuits(solutionPair.original, solutionPair.answer, 20);
+    var options = generateCircuits(solutionPair.original, solutionPair.answer, 3);
     return {original: solutionPair.original, options: options};
 }
 

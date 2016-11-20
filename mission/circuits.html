@@ -7,7 +7,7 @@
 		<!-- LESS JS <script type="text/javascript" src="lib/less.min.js"></script> -->
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
 		<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 		<style>
 
@@ -30,11 +30,14 @@
 		<script type="text/javascript">
 
 			var challenge = generateChallenge();
+			var original = challenge.original;
 
 			var FIDX = 0;
 			var boards = challenge.options;
 
-			render();
+			renderCircuit(original, {
+				showNumber: false
+			});
 
 			function render(){
 				FIDX = (boards.length + FIDX) % boards.length;
@@ -43,21 +46,7 @@
 					renderCircuit(newCircuit);
 				}
 				else{
-					var circuit = {
-						nodes: {
-							a: true,
-							b: true,
-							c: true,
-							d: false,
-							e: false
-						},
-						led: 'red',
-						wires: [
-							{node1: 'a', node2: 'c', broken: false},
-							{node1: 'c', node2: 'b', broken: true}
-						]
-					}
-					renderCircuit(circuit);
+					alert('INDEX ERROR');
 				}
 			}
 
@@ -74,8 +63,23 @@
 			MissionLink.sync();
 
 			MissionLink.alphaCallback = stepBackward;
-			MissionLink.betaCallback = false;
 			MissionLink.gammaCallback = stepForward;
+
+			MissionLink.betaCallback = function(){
+				var res = checkCircuit(original, boards[FIDX]);
+				if(res){
+					alert('Victory!');
+				}
+				else{
+					alert('Strike X');
+				}
+			}
+
+			MissionLink.deltaCallback = function(){
+				renderCircuit(original, {
+					showNumber: false
+				});
+			}
 
 		</script>
 
