@@ -56,6 +56,7 @@ function getNeighbors(circuit) {
         var neighbors = [];
         for (var j = 0; j < circuit.wires.length; j++) {
             var wire = circuit.wires[j];
+
             if (wire.node1 === node && !wire.broken) {
                 neighbors.push(wire.node2);
             }
@@ -246,12 +247,9 @@ function checkCircuit(original, replacement) {
                     countCutWires(original) === 2 && countCutWires(replacement) === 2) {
                 return true;
             }
-            // The original board has 5 wires
-            if (original.wires.length === 5) {
-                // The original board has only 1 or no cycles
-                if (countCycles(original) <= 1) {
-                    return true;
-                }
+            // The original board has 3 wires
+            if (original.wires.length === 3) {
+                return true;
             }
         }
     }
@@ -270,7 +268,7 @@ function checkCircuits(target, circuits) {
 function generateCircuits(original, answer, nCircuits) {
     var circuits = [];
     for (var i = 0; i < nCircuits; i++) {
-        circuits.push(generateCircuit);
+        circuits.push(generateCircuit());
     }
 
     var randIndex = Math.floor(Math.random() * nCircuits);
@@ -279,6 +277,17 @@ function generateCircuits(original, answer, nCircuits) {
 }
 
 function setNNodes(circuit, nNodes) {
+    // Randomly choose wires
+    var possibleEdges = getPossibleEdges(nNodes);
+    var edges = [];
+    for (var i = 0; i < possibleEdges.length; i++) {
+        if (Math.random() >= 0.5) {
+            var edge = possibleEdges[i];
+            edge.broken = Math.random() >= 0.5 ? true : false;
+            edges.push(edge);
+        }
+    }
+
     var newCircuit = {
         nodes: {
             a: nNodes >= 1,
@@ -288,7 +297,7 @@ function setNNodes(circuit, nNodes) {
             e: nNodes >= 5
         },
         led: circuit.led,
-        wires: circuit.wires
+        wires: edges
     }
     return newCircuit;
 }
@@ -336,6 +345,19 @@ function setCutWires(circuit, nCutWires) {
 
 function setWires(circuit, nCutWires, nCycles) {
     var newCircuit = circuit;
+    if (nCutWires === undefined && nCycles === undefined) {
+        var possibleEdges = getPossibleEdges(countNodes(newCircuit));
+        var edges = [];
+        for (var i = 0; i < possibleEdges.length; i++) {
+            if (Math.random() >= 0.5) {
+                var edge = possibleEdges[i];
+                edge.broken = Math.random() >= 0.5 ? true : false;
+                edges.push(edge);
+            }
+        }
+        newCircuit.wires = edges;
+        return newCircuit;
+    }
     if (nCycles === undefined) {
         while (countCutWires(newCircuit) !== nCutWires) {
             newCircuit = setRandomWires(newCircuit);
@@ -350,12 +372,30 @@ function setWires(circuit, nCutWires, nCycles) {
     return newCircuit;
 }
 
+function setNWires(circuit, nWires) {
+    var newCircuit = circuit;
+    var possibleEdges = getPossibleEdges(countNodes(circuit));
+    var edges = [];
+    for (var i = 0; i < nWires; i++) {
+        var edge = possibleEdges[i];
+        edge.broken = false;
+        edges.push(edge);
+    }
+    newCircuit.wires = edges;
+    return newCircuit;
+}
+
 function generateSolutionPair() {
     var original = generateCircuit();
     var answer = generateCircuit();
 
     // 16 solution types
-    var solutionType = Math.floor(Math.random()*4);//Math.floor(Math.random()*16);
+    var brokenCases = [0, 2, 7, 9, 14, 15];
+    var solutionType = 0;
+    while (brokenCases.indexOf(solutionType) !== -1) {
+        solutionType = Math.floor(Math.random()*14);
+    }
+
     if (solutionType === 0) {
         original.led = 'red';
         answer.led = 'red';
@@ -366,6 +406,7 @@ function generateSolutionPair() {
         original.led = 'red';
         answer.led = 'red';
         original = setNNodes(original, Math.floor(Math.random()*3)+3);
+        original = setWires(original, undefined, undefined);
         answer = setNNodes(answer, Math.floor(Math.random()*2)+4);
         answer = setWires(answer, 1, 1);
     }
@@ -373,7 +414,8 @@ function generateSolutionPair() {
         original.led = Math.random() >= 0.5 ? 'blue' : 'green';
         answer.led = 'red';
         original = setNNodes(original, 3);
-        answer = setNNodes(answer, Math.floor(Math.random*3)+3);
+        original = setWires(original, undefined, undefined);
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+3);
         answer = setWires(answer, 2, 0);
     }
     else if (solutionType === 3) {
@@ -381,16 +423,93 @@ function generateSolutionPair() {
         answer.led = 'red';
         original = setNNodes(original, 3);
         original = setWires(original, 0, undefined);
-        answer = setNNodes(answer, Math.floor(Math.random*3)+3);
-        answer = setWires(original, 0, 1);
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+3);
+        answer = setWires(answer, 0, 1);
     }
-    // else if (solutionType === 4) {
-    //     original.led = Math.random() >= 0.5 ? 'blue' : 'green';
-    //     answer.led = 'red';
-    //     original = setNNodes(original, 2);
-    //     original = setWires(original, 0, 0);
-    //
-    // }
+    else if (solutionType === 4) {
+        original.led = Math.random() >= 0.5 ? 'blue' : 'green';
+        answer.led = 'red';
+        original = setNNodes(original, 2);
+        original = setWires(original, 0, 0);
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+3);
+        answer = setWires(answer, 0, 1);
+    }
+    else if (solutionType === 5) {
+        original.led = Math.random() >= 0.5 ? 'blue' : 'green';
+        answer.led = 'red';
+        original = setNNodes(original, 2);
+        original = setWires(original, 1, 0);
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+3);
+        answer = setWires(answer, Math.floor(Math.random()*3), 0);
+    }
+    else if (solutionType === 6) {
+        original.led = 'blue';
+        answer.led = 'blue';
+        original = setNNodes(original, 5);
+        original = setWires(original, 0, undefined);
+        answer = setNNodes(answer, 5);
+        answer = setWires(answer, 0, 2);
+    }
+    else if (solutionType === 7) {
+        original.led = 'blue';
+        answer.led = 'blue';
+        original = setNNodes(original, 5);
+        original = setWires(original, 2, undefined);
+        answer = setNNodes(answer, 5);
+        answer = setWires(answer, 0, 1);
+    }
+    else if (solutionType === 8) {
+        original.led = 'blue';
+        answer.led = 'blue';
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+2);
+        answer = setNWires(answer, 1);
+    }
+    else if (solutionType === 9) {
+        original.led = 'blue';
+        answer.led = 'blue';
+        answer = setNNodes(answer, Math.floor(Math.random()*3)+2);
+        answer = setCutWires(answer, Math.floor(Math.random()*3));
+    }
+    else if (solutionType === 10) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 4);
+        original = setWires(original, 0, 2);
+        answer = setNNodes(answer, 5);
+        answer = setWires(answer, 0, 2);
+    }
+    else if (solutionType === 11) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 4);
+        original = setWires(original, 0, undefined);
+        answer = setNNodes(answer, 5);
+        answer = setWires(answer, 0, 1);
+    }
+    else if (solutionType === 12) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 3);
+        original = setWires(original, 1, 0);
+        answer = setNNodes(answer, Math.floor(Math.random()*2)+4);
+        answer = setWires(answer, Math.floor(Math.random()*2)+2, 0);
+    }
+    else if (solutionType === 13) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 3);
+        original = setWires(original, 1, undefined);
+        answer = setNNodes(answer, Math.floor(Math.random()*2)+4);
+        answer = setWires(answer, Math.floor(Math.random()*2)+2, 1);
+    }
+    else if (solutionType === 14) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 3);
+        original = setCutWires(original, 2);
+        answer = setNNodes(answer, 3);
+        answer = setCutWires(answer, 2);
+    }
+    else if (solutionType === 15) {
+        answer.led = Math.random() < 0.33 ? 'blue' : Math.random() < 0.5 ? 'green' : 'yellow';
+        original = setNNodes(original, 3);
+        original = setNWires(original, 3);
+    }
 
     return {original: original, answer: answer};
 }
@@ -401,8 +520,20 @@ function generateChallenge() {
     return {original: solutionPair.original, options: options};
 }
 
-// var solutionPair = generateSolutionPair();
-// console.log(checkCircuit(solutionPair.original, solutionPair.answer));
+for (var i = 0; i < 100; i++) {
+    var solutionPair = generateSolutionPair();
+    if (!checkCircuit(solutionPair.original, solutionPair.answer)) {
+        console.log('FALSE');
+        renderCircuit(solutionPair.original);
+    }
+    if (i === 99) {
+        console.log('DONE');
+    }
+    // console.log(solutionPair);
+}
+// for (var i = 0; i < solutionPair.original.wires.length; i++) {
+//     console.log(solutionPair.original.wires[i]);
+// }
 
 // var original = {
 // 	nodes: {
