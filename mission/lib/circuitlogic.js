@@ -520,7 +520,7 @@ function generateSolutionPair() {
 
 function generateChallenge() {
     var solutionPair = generateSolutionPair();
-    var options = generateCircuits(solutionPair.original, solutionPair.answer, 3);
+    var options = generateCircuits(solutionPair.original, solutionPair.answer, 9);
     return {original: solutionPair.original, options: options};
 }
 
