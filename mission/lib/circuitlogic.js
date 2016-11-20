@@ -394,8 +394,8 @@ function generateSolutionPair() {
     var answer = generateCircuit();
 
     // 16 solution types
-    var brokenCases = [0, 2, 7, 9, 14, 15];
-    var solutionType = 0;
+    var brokenCases = [2, 7, 9, 14, 15];
+    var solutionType = 15;
     while (brokenCases.indexOf(solutionType) !== -1) {
         solutionType = Math.floor(Math.random()*14);
     }
@@ -520,7 +520,7 @@ function generateSolutionPair() {
 
 function generateChallenge() {
     var solutionPair = generateSolutionPair();
-    var options = generateCircuits(solutionPair.original, solutionPair.answer, 9);
+    var options = generateCircuits(solutionPair.original, solutionPair.answer, 3);
     return {original: solutionPair.original, options: options};
 }
 
