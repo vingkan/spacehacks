@@ -22,12 +22,11 @@
 		  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));</script>
 
-		<h1>SpaceHacks</h1>
-		<h3>Your Game ID: <span id="gid">...</span></h3>
+		<h1 class="title">SpaceHacks</h1>
+		<h3>Do you have what it takes to save a malfunctioning craft?</h3>
 
 		<h1>Choose Your Role</h1>
-
-		<h3>VR Companion Controller</h3>
+		<h3 style="display: none;">Your Game ID: <span id="gid">...</span></h3>
 
 		<div class="centerbox">
 			<button id="engineering">Engineering</button>
@@ -35,7 +34,7 @@
 		</div>
 
 		<div id="control-setup" class="blackbox">
-			<h3>Mission Control</h3>
+			<h2>Mission Control</h2>
 			<p>Your job is to analyze the damage to the spacecraft.</p>
 			<ul>
 				<li>
@@ -54,7 +53,7 @@
 		</div>
 		
 		<div id="engineering-setup" class="blackbox">
-			<h3>Engineering Lead</h3>
+			<h2>Engineering Lead</h2>
 			<p>Your job is to repair the damage to the spacecraft.</p>
 			<ul>
 				<li>
@@ -71,9 +70,6 @@
 				</li>
 			</ul>
 		</div>
-		
-		<h3>Mission Control Manual</h3>
-		<div class="fb-send" data-href="https://developers.facebook.com/docs/plugins/"></div>
 
 		<h3>Made at WildHacks 2016</h3>
 
@@ -92,8 +88,8 @@
 				var promise = db.ref('games').push({timestamp: Date.now()});
 				promise.then(function(data){
 
-					//window.ROOM_KEY = promise.path['o'][1];
-					window.ROOM_KEY = 'vinesh';
+					window.ROOM_KEY = promise.path['o'][1];
+					//window.ROOM_KEY = 'vinesh';
 					/*var gameWindow = window.open('spacehacks/graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
 					console.log(gameWindow)
 					gameWindow.initGame(window.ROOM_KEY);*/
