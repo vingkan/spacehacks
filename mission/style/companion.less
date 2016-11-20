@@ -1,7 +1,46 @@
+@LEDred: #eb5c1f;
+@LEDblue: #0bebe5;
+@LEDgreen: #0cdc56;
+@LEDyellow: #d3eb37;
+
+html {
+	font-size: 0;
+	overflow: hidden;
+}
+
 button {
+
+	outline: none;
+	border: none;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+
+	width: 50vw;
+	height: 50vh;
+
+	color: white;
+	font-family: 'Bungee', sans-serif;
+	font-size: 10vh;
 
 	&:hover {
 		cursor: pointer;
 	}
 
+}
+
+button#left {
+	background: @LEDgreen;
+}
+
+button#check {
+	background: @LEDred;
+}
+
+button#right {
+	background: @LEDblue;
+}
+
+button#view {
+	background: @LEDyellow;
 }

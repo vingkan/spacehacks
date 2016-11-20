@@ -9,10 +9,9 @@
 		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.1/howler.min.js"></script>
 	</head>
 	<body>
-
-		<h1>Companion Client</h1>
 
 		<button id="left">Left</button>
 		<button id="right">Right</button>
@@ -68,6 +67,19 @@
 			ClickEvent('view', function(e){
 				MissionLink._pushButton('delta');
 			});
+
+			var buttonSound = new Howl({
+				src: ['./style/sound/digital_button.mp3']
+			});
+
+			function playSound(){
+				buttonSound.play();
+			}
+
+			MissionLink.alphaCallback = playSound;
+			MissionLink.betaCallback = playSound;
+			MissionLink.gammaCallback = playSound;
+			MissionLink.deltaCallback = playSound;
 
 		</script>
 		
