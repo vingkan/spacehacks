@@ -54,10 +54,16 @@ h1{
 	.TitleFont();
 }
 
+h1.title{
+	font-size: 2.5 * @tx;
+	line-height: 2.75 * @tx;
+}
+
 h2{
 	font-size: 1.25 * @tx;
 	line-height: 1.5 * @tx;
 	color: @GasGreen;
+	.TitleFont();
 }
 
 h3{
@@ -74,8 +80,8 @@ p{
 
 li{
 	font-size: 1.0 * @tx;
-	line-height: 1.25 * @tx;
-	list-style: disc;
+	line-height: 1.0 * @tx;
+	list-style: none;
 	margin-left: 1.5 * @tx;
 }
 
@@ -89,6 +95,12 @@ html{
 	.BodyFont();
 	font-size: @tx;
 	color: white;
+	background: url('engine1.jpg') no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	overflow-x: hidden;
 }
 
 body{
@@ -119,6 +131,14 @@ div.centerbox {
 	text-align: center;
 }
 
+div.blackbox {
+	//background: @Charcoal;
+	background: rgba(26, 26, 26, 0.75);
+	padding: 15px 0;
+	margin: 15px auto;
+	display: none;
+}
+
 input, button, select {
 	outline: none;
 	border: none;
@@ -128,7 +148,7 @@ button {
 
 	display: inline-block;
 	//margin: 10px auto;
-	margin: 10px;
+	margin: 15px;
 
 	width: 250px;
 	height: 50px;
@@ -145,6 +165,23 @@ button {
 		cursor: pointer;
 		background: lighten(@SpaceBlue, 10%);
 	}
+
+}
+
+@FacebookBlue: #0080FF;
+
+button.msg-button {
+
+	background: @FacebookBlue;
+
+	.BodyFont();
+
+	width: 100px;
+	height: 25px;
+	line-height: 20px;
+	font-size: 12px;
+	vertical-align: middle;
+
 
 }
 

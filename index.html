@@ -9,6 +9,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Bungee|Open+Sans:400,800" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 
@@ -21,21 +22,56 @@
 		  fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));</script>
 
-		<h1>SpaceHacks</h1>
-		<h3>Your Game ID: <span id="gid">...</span></h3>
+		<h1 class="title">SpaceHacks</h1>
+		<h3>Do you have what it takes to save a malfunctioning craft?</h3>
 
 		<h1>Choose Your Role</h1>
-
-		<h3>VR Companion Controller</h3>
+		<h3 style="display: none;">Your Game ID: <span id="gid">...</span></h3>
 
 		<div class="centerbox">
 			<button id="engineering">Engineering</button>
 			<button id="control">Mission Control</button>
 		</div>
+
+		<div id="control-setup" class="blackbox">
+			<h2>Mission Control</h2>
+			<p>Your job is to analyze the damage to the spacecraft.</p>
+			<ul>
+				<li>
+					<button id="send-controller" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Send your partner the controller (if using VR).
+				</li>
+				<li>
+					<button id="send-game" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Send your partner the game.
+				</li>
+				<li>
+					<button id="open-terminal" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Launch your Mission Control Terminal!
+				</li>
+			</ul>
+		</div>
 		
-		
-		<h3>Mission Control Manual</h3>
-		<div class="fb-send" data-href="https://developers.facebook.com/docs/plugins/"></div>
+		<div id="engineering-setup" class="blackbox">
+			<h2>Engineering Lead</h2>
+			<p>Your job is to repair the damage to the spacecraft.</p>
+			<ul>
+				<li>
+					<button id="send-terminal" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Send your partner the communication terminal.
+				</li>
+				<li>
+					<button id="send-controller2" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Send yourself the controls (if using VR).
+				</li>
+				<li>
+					<button id="open-game" class="msg-button"><i class="fa fa-comment"></i> Messenger</button>
+					Enter the spacecraft engineering room!
+				</li>
+			</ul>
+		</div>
+
+		<h3>Made at WildHacks 2016</h3>
 
 		<script type="text/javascript" src="mission/lib/infra.js"></script>
 		<script type="text/javascript" src="mission/lib/main.js"></script>
@@ -52,29 +88,67 @@
 				var promise = db.ref('games').push({timestamp: Date.now()});
 				promise.then(function(data){
 
-					//window.ROOM_KEY = promise.path['o'][1];
-					window.ROOM_KEY = 'vinesh';
-					/*var gameWindow = window.open('graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+					window.ROOM_KEY = promise.path['o'][1];
+					//window.ROOM_KEY = 'vinesh';
+					/*var gameWindow = window.open('spacehacks/graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
 					console.log(gameWindow)
 					gameWindow.initGame(window.ROOM_KEY);*/
 					
 
 					document.getElementById('gid').innerText = window.ROOM_KEY;
 
+					// Player Selects Mission Control
+
 					ClickEvent('control', function(){
-						var controlWindow = window.open('mission/control.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+						document.getElementById('control-setup').style.display = 'block';
+						document.getElementById('engineering-setup').style.display = 'none';
 					});
 
-					var game_url = window.location.origin + '/graphics/index.html?gid=' + window.ROOM_KEY;
-					console.log(game_url)
-
-					var companion = document.getElementById('engineering');
-					companion.addEventListener('click', function(e){
+					ClickEvent('send-controller', function(e){
 						FB.ui({
 							method: 'send',
 							name: 'SpaceHacks',
-							link: game_url,
+							link: window.location.origin + '/spacehacks/mission/companion.html?gid=' + window.ROOM_KEY
 						});
+					});
+
+					ClickEvent('send-game', function(e){
+						FB.ui({
+							method: 'send',
+							name: 'SpaceHacks',
+							link: window.location.origin + '/spacehacks/graphics/index.html?gid=' + window.ROOM_KEY
+						});
+					});
+
+					ClickEvent('open-terminal', function(){
+						var controlWindow = window.open('mission/control.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+					});
+
+					// Player Selects Engineering
+
+					ClickEvent('engineering', function(){
+						document.getElementById('control-setup').style.display = 'none';
+						document.getElementById('engineering-setup').style.display = 'block';
+					});
+
+					ClickEvent('send-terminal', function(e){
+						FB.ui({
+							method: 'send',
+							name: 'SpaceHacks',
+							link: window.location.origin + '/spacehacks/mission/control.html?gid=' + window.ROOM_KEY
+						});
+					});
+
+					ClickEvent('send-controller2', function(e){
+						FB.ui({
+							method: 'send',
+							name: 'SpaceHacks',
+							link: window.location.origin + '/spacehacks/mission/companion.html?gid=' + window.ROOM_KEY
+						});
+					});
+
+					ClickEvent('open-game', function(){
+						var controlWindow = window.open('graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
 					});
 
 				});
