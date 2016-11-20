@@ -19,7 +19,7 @@ function clearCanvas(){
 function drawRect(r, fill){
 	ctx.beginPath();
 	ctx.rect(r.x, r.y, r.width, r.height);
-	ctx.stroke();
+	//ctx.stroke();
 	if(fill){
 		ctx.fillStyle = fill;
 		ctx.fill();
@@ -83,11 +83,11 @@ var NODE_POS = [
 	{x: 250, y: 200, node: 'EMPTY'},
 	{x: 250, y: 400, node: 'EMPTY'},
 	{x: 250, y: 600, node: 'EMPTY'},
-	{x: 250, y: 800, node: 'EMPTY'},
+	//{x: 250, y: 800, node: 'EMPTY'},
 	{x: 750, y: 200, node: 'EMPTY'},
-	{x: 750, y: 400, node: 'EMPTY'},
+	//{x: 750, y: 400, node: 'EMPTY'},
 	{x: 750, y: 600, node: 'EMPTY'},
-	{x: 750, y: 800, node: 'EMPTY'}
+	//{x: 750, y: 800, node: 'EMPTY'}
 ];
 
 var LETTER_POS = ['a', 'b', 'c', 'd', 'e'];
@@ -104,14 +104,27 @@ var LED_COLOR = {
 }
 
 var PATHS = {
-	a: {
-		b: [[0, 100], [200, 0]],
-		c: []
-	},
-	b: {
-		c: []
-	}
+    a: {
+        b: [{x: 250, y: 200}, {x: 250, y: 400}],
+        c: [{x: 250, y: 200}, {x: 100, y: 200}, {x: 100, y: 600}, {x: 250, y: 600}],
+        d: [{x: 250, y: 200}, {x: 325, y: 200}, {x: 325, y: 125}, {x: 750, y: 125}, {x: 750, y: 200}],
+        e: [{x: 250, y: 200}, {x: 250, y: 50}, {x: 900, y: 50}, {x: 900, y: 600}, {x: 750, y: 600}]
+    },
+    b: {
+        c: [{x: 250, y: 400}, {x: 175, y: 400}, {x: 175, y: 525}, {x: 250, y: 525}, {x: 250, y: 600}],
+        d: [{x: 250, y: 400}, {x: 400, y: 400}, {x: 400, y: 200}, {x: 750, y: 200}],
+        e: [{x: 250, y: 400}, {x: 250, y: 450}, {x: 600, y: 450, bridged: true}, {x: 600, y: 600}, {x: 750, y: 600}]
+    },
+    c: {
+        d: [{x: 250, y: 600}, {x: 500, y: 600}, {x: 500, y: 400}, {x: 750, y: 400}, {x: 750, y: 200}],
+        e: [{x: 250, y: 600}, {x: 250, y: 700}, {x: 750, y: 700}, {x: 750, y: 600}]
+    },
+    d: {
+        e: [{x: 750, y: 200}, {x: 825, y: 200}, {x: 825, y: 500}, {x: 750, y: 500}, {x: 750, y: 600}]
+    }
 }
+
+// Intersection at x: 500, y: 450
 
 function getMidpoint(s1, s2){
 	// Assumes vertical or horizontal line segments
@@ -128,25 +141,16 @@ function getMidpoint(s1, s2){
 }
 
 function drawCircuitPath(pathList, breakPath, wireColor){
-	var needsBreaking = true;
+	var needsBreaking = breakPath;
+	var breakPoint = pathList.length - 1;
 	var i = false;
 	for(var p = 0; p < pathList.length; p++){
 		var f = pathList[p];
 		if(i){
-			drawLine([i.x, i.y], [f.x, f.y], {
-				stroke: wireColor
-			});
-			if(breakPath && needsBreaking){
-				var mid = getMidpoint(i, f);
-					mid.r = 10;
-				drawCircle(mid, {
-					fill: BASE_COLOR
-				});
-				needsBreaking = false;
-			}
-			if(!needsBreaking && f.bridged){
+			if(f.bridged){
 				// ASSUMES BRIDGE IS ON HORIZONTAL SEGMENT
 				var mid = getMidpoint(i, f);
+					mid.x += 75;
 				var bridgeSize = 50;
 				// Stop before bridge
 				drawLine([i.x, i.y], [mid.x - bridgeSize, f.y], {
@@ -168,6 +172,21 @@ function drawCircuitPath(pathList, breakPath, wireColor){
 				});
 				// Fuck Königsberg.
 			}
+			else{
+				drawLine([i.x, i.y], [f.x, f.y], {
+					stroke: wireColor
+				});
+			}
+			if(breakPath && needsBreaking && p === breakPoint){
+				var mid = getMidpoint(i, f);
+					mid.r = 20;
+				drawCircle(mid, {
+					fill: BASE_COLOR,
+					stroke: wireColor,
+					dashes: [5, 15]
+				});
+				needsBreaking = false;
+			}
 		}
 		i = f;
 	}
@@ -179,30 +198,32 @@ function renderCircuit(c, opt){
 		showNumber: opt.showNumber || true
 	}
 
-	drawRect({
+	/*drawRect({
 		x: 0,
 		y: 0,
 		width: canvas.width,
 		height: canvas.height,
-	}, BASE_COLOR);
+	}, BASE_COLOR);*/
+
+	clearCanvas();
 
 	drawRect({
 		x: 75,
-		y: 50,
+		y: 775 + 50,
 		width: 100,
 		height: 100,
 	}, LED_COLOR[c.led]);
 
 	drawRect({
 		x: 85,
-		y: 60,
+		y: 775 + 60,
 		width: 80,
 		height: 80,
 	}, BASE_COLOR);
 
 	drawRect({
 		x: 100,
-		y: 75,
+		y: 775 + 75,
 		width: 50,
 		height: 50,
 	}, LED_COLOR[c.led]);
@@ -230,7 +251,7 @@ function renderCircuit(c, opt){
 
 	for(var w = 0; w < c.wires.length; w++){
 		var wire = c.wires[w];
-		var pathList = PATHS[wire.node1][wire.nodes];
+		var pathList = PATHS[wire.node1][wire.node2];
 		var wireColor = WIRE_COLORS.pop();
 		drawCircuitPath(pathList, wire.broken, wireColor);
 	}
@@ -266,7 +287,7 @@ function renderCircuit(c, opt){
 		else{
 			cidx = '#';
 		}
-		drawText(cidx, [850, 100], {
+		drawText(cidx, [850, 875], {
 			size: 80
 		});
 	}
@@ -275,8 +296,29 @@ function renderCircuit(c, opt){
 
 }
 
-renderCircuit({"nodes":{"a":true,"b":true,"c":true,"d":true,"e":true},"led":"yellow","wires":[{"node1":"a","node2":"d","broken":false},{"node1":"a","node2":"e","broken":false},{"node1":"b","node2":"e","broken":false},{"node1":"d","node2":"e","broken":false}],"number":-1});
-
+/*renderCircuit({
+	nodes: {
+		a: true,
+		b: true,
+		c: true,
+		d: true,
+		e: true
+	},
+	wires: [
+		{node1: 'a', node2: 'b', broken: true},
+		{node1: 'a', node2: 'c', broken: true},
+		{node1: 'a', node2: 'd', broken: true},
+		{node1: 'a', node2: 'e', broken: true},
+		{node1: 'b', node2: 'c', broken: true},
+		{node1: 'b', node2: 'd', broken: true},
+		{node1: 'b', node2: 'e', broken: true},
+		{node1: 'c', node2: 'd', broken: true},
+		{node1: 'c', node2: 'e', broken: true},
+		{node1: 'd', node2: 'e', broken: true},
+	],
+	led: 'red',
+	number: '42'
+});*/
 
 // OLD WIRE DRAWING METHOD
 
