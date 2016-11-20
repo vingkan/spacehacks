@@ -171,7 +171,7 @@ function renderCircuit(c){
 		var f = c.nodes[path.node2].pos;
 		var brk = {
 			x: 0,
-			y: 0	
+			y: 0
 		}
 
 		if(!path.broken){
@@ -247,6 +247,5 @@ function renderCircuit(c){
 
 	var dataURI = canvas.toDataURL();
 	db.ref('modules/circuits/data-uri').set(dataURI);
-
 
 }
