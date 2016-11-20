@@ -12,8 +12,8 @@
 		<style>
 
 			canvas {
-				width: 240px;
-				height: 400px;
+				width: 512px;
+				height: 512px;
 			}
 
 		</style>
@@ -21,11 +21,63 @@
 
 	<body>
 
-		<canvas id="canvas" width="240px" height="400px"></canvas>
+		<canvas id="canvas" width="1000px" height="1000px"></canvas>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
 		<script type="text/javascript" src="lib/circuits.js"></script>
 		<script type="text/javascript" src="lib/circuitlogic.js"></script>
+
+		<script type="text/javascript">
+
+			var challenge = generateChallenge();
+
+			var FIDX = 0;
+			var boards = challenge.options;
+
+			render();
+
+			function render(){
+				FIDX = (boards.length + FIDX) % boards.length;
+				var newCircuit = boards[FIDX];
+				if(newCircuit){
+					renderCircuit(newCircuit);
+				}
+				else{
+					var circuit = {
+						nodes: {
+							a: true,
+							b: true,
+							c: true,
+							d: false,
+							e: false
+						},
+						led: 'red',
+						wires: [
+							{node1: 'a', node2: 'c', broken: false},
+							{node1: 'c', node2: 'b', broken: true}
+						]
+					}
+					renderCircuit(circuit);
+				}
+			}
+
+			window.stepBackward = function(){
+				FIDX--;
+				render();
+			}
+
+			window.stepForward = function(){
+				FIDX++;
+				render();
+			}
+
+			MissionLink.sync();
+
+			MissionLink.alphaCallback = stepBackward;
+			MissionLink.betaCallback = false;
+			MissionLink.gammaCallback = stepForward;
+
+		</script>
 
 	</body>
 </html>
