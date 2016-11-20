@@ -3,6 +3,7 @@
 // register the application module
 b4w.register("input_test", function(exports, require) {
 
+console.log('difference')
 
 // import modules used by the app
 var m_anim      = require("animation");
