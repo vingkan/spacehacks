@@ -18,6 +18,7 @@ window.MissionLink = {
 	deltaCallback: false,
 
 	// STATES
+	roomKey: false,
 	past: {
 		alpha: Infinity,
 		beta: Infinity,
@@ -37,7 +38,7 @@ window.MissionLink = {
 	// INTERNAL METHODS
 	_syncButton: function(p){
 		var _this = this;
-		db.ref('buttons/' + p).on('child_added', function(snap){
+		db.ref(_this.roomKey + '/buttons/' + p).on('child_added', function(snap){
 			var val = snap.val();
 			if(val.timestamp > _this.past[p]){
 				_this.past[p] = val.timestamp;
@@ -50,17 +51,20 @@ window.MissionLink = {
 	},
 
 	_unsyncButton: function(p){
-		db.ref('buttons/' + p).off();
+		var _this = this;
+		db.ref(_this.roomKey + '/buttons/' + p).off();
 	},
 
 	_pushButton: function(id){
-		db.ref('buttons/' + id).push({timestamp: Date.now()});
+		var _this = this;
+		db.ref(_this.roomKey + '/buttons/' + id).push({timestamp: Date.now()});
 	},
 
 	// EXTERNAL METHODS
-	sync: function(){
+	sync: function(roomKey){
 		var _this = this;
-		this.past = {
+		_this.roomKey = roomKey;
+		_this.past = {
 			alpha: Date.now(),
 			beta: Date.now(),
 			gamma: Date.now(),
@@ -69,20 +73,26 @@ window.MissionLink = {
 		for(var p in this.refs){
 			this.refs[p] = this._syncButton(p);
 		}
-		db.ref('readout').on('value', function(r){
+		db.ref(_this.roomKey + '/readout').on('value', function(r){
 			_this.readoutMode = r.val();
 		});
 	},
 
 	unsync: function(){
-		for(var r in this.refs){
-			this._unsyncButton(r);
+		var _this = this;
+		for(var r in _this.refs){
+			_this._unsyncButton(r);
 		}
-		db.ref('readout').off();
+		db.ref(_this.roomKey + '/readout').off();
+	},
+
+	getRoomKey: function(){
+		return this.roomKey;
 	},
 
 	sendMessage: function(msg){
-		db.ref('messages').push({
+		var _this = this;
+		db.ref(_this.roomKey + '/messages').push({
 			message: msg,
 			timestamp: Date.now()
 		});
@@ -93,7 +103,8 @@ window.MissionLink = {
 	},
 
 	setReadoutMode: function(newMode){
-		db.ref('readout').set(newMode);
+		var _this = this;
+		db.ref(_this.roomKey + '/readout').set(newMode);
 	}
 
 }

@@ -269,6 +269,6 @@ function renderCircuit(c, opt){
 	}
 
 	var dataURI = canvas.toDataURL();
-	db.ref('modules/circuits/data-uri').set(dataURI);
+	db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').set(dataURI);
 
 }

@@ -29,56 +29,60 @@
 
 		<script type="text/javascript">
 
-			var challenge = generateChallenge();
-			var original = challenge.original;
+			window.init = function(roomKey){
 
-			var FIDX = 0;
-			var boards = challenge.options;
+				MissionLink.sync(roomKey);
 
-			renderCircuit(original, {
-				showNumber: false
-			});
+				var challenge = generateChallenge();
+				var original = challenge.original;
 
-			function render(){
-				FIDX = (boards.length + FIDX) % boards.length;
-				var newCircuit = boards[FIDX];
-				if(newCircuit){
-					renderCircuit(newCircuit);
-				}
-				else{
-					alert('INDEX ERROR');
-				}
-			}
+				var FIDX = 0;
+				var boards = challenge.options;
 
-			window.stepBackward = function(){
-				FIDX--;
-				render();
-			}
-
-			window.stepForward = function(){
-				FIDX++;
-				render();
-			}
-
-			MissionLink.sync();
-
-			MissionLink.alphaCallback = stepBackward;
-			MissionLink.gammaCallback = stepForward;
-
-			MissionLink.betaCallback = function(){
-				var res = checkCircuit(original, boards[FIDX]);
-				if(res){
-					alert('Victory!');
-				}
-				else{
-					alert('Strike X');
-				}
-			}
-
-			MissionLink.deltaCallback = function(){
 				renderCircuit(original, {
 					showNumber: false
 				});
+
+				function render(){
+					FIDX = (boards.length + FIDX) % boards.length;
+					var newCircuit = boards[FIDX];
+					if(newCircuit){
+						renderCircuit(newCircuit);
+					}
+					else{
+						alert('INDEX ERROR');
+					}
+				}
+
+				window.stepBackward = function(){
+					FIDX--;
+					render();
+				}
+
+				window.stepForward = function(){
+					FIDX++;
+					render();
+				}
+
+				MissionLink.alphaCallback = stepBackward;
+				MissionLink.gammaCallback = stepForward;
+
+				MissionLink.betaCallback = function(){
+					var res = checkCircuit(original, boards[FIDX]);
+					if(res){
+						alert('Victory!');
+					}
+					else{
+						alert('Strike X');
+					}
+				}
+
+				MissionLink.deltaCallback = function(){
+					renderCircuit(original, {
+						showNumber: false
+					});
+				}
+
 			}
 
 		</script>

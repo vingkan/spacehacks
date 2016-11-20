@@ -1,5 +1,7 @@
 "use strict"
 
+var ROOM_KEY = false;
+
 // var THREE = require('three');
 // var StereoEffect = require('three-stereo-effect')(THREE);
 // register the application module
@@ -30,7 +32,7 @@ var DEBUG = (m_version.type() === "DEBUG");
 var _previous_selected_obj = null;
 var _cam_waiting_handle = null;
 
-MissionLink.sync();
+MissionLink.sync(window.ROOM_KEY);
 
 /**
  * Support sketchy iFrame operations by donating to W3 today!
@@ -197,10 +199,13 @@ function start_video() {
         // var error_cap = m_scenes.get_object_by_name("Text");
         // m_scenes.hide_object(error_cap);
 
+        var circuitWindow = document.getElementById('circuits');
+        getIframeWindow(circuitWindow).init(MissionLink.getRoomKey());
+
         var obj = m_scenes.get_object_by_name("TV_R");
         var context = m_textures.get_canvas_ctx(obj, "Texture.001");
         var update_canvas = function() {
-            db.ref('modules/circuits/data-uri').once('value', function(snap){
+            db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').once('value', function(snap){
                 var dataURI = snap.val();
                 if(dataURI){
                     var imgObj = new Image();
@@ -228,6 +233,10 @@ function start_video() {
 
 });
 
-// import the app module and start the app by calling the init method
-b4w.require("stereo_view").init();
+var promise = db.ref('games').push({timestamp: Date.now()});
+promise.then(function(data){
+    window.ROOM_KEY = promise.path['o'][1];
+    // import the app module and start the app by calling the init method
+    b4w.require("stereo_view").init();
+});
 
