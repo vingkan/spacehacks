@@ -1,8 +1,19 @@
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
+function sendCanvasImage(){
+	var dataURI = canvas.toDataURL();
+	db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').set(dataURI);
+}
+
 function clearCanvas(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawRect({
+		x: 0,
+		y: 0,
+		width: canvas.width,
+		height: canvas.height,
+	}, BASE_COLOR);
 }
 
 function drawRect(r, fill){
@@ -268,7 +279,6 @@ function renderCircuit(c, opt){
 		});
 	}
 
-	var dataURI = canvas.toDataURL();
-	db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').set(dataURI);
+	sendCanvasImage();
 
 }

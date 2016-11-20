@@ -36,7 +36,7 @@
 				var challenge = generateChallenge();
 				var original = challenge.original;
 
-				var FIDX = 0;
+				var FIDX = -1;
 				var boards = challenge.options;
 
 				renderCircuit(original, {
@@ -70,10 +70,21 @@
 				MissionLink.betaCallback = function(){
 					var res = checkCircuit(original, boards[FIDX]);
 					if(res){
-						alert('Victory!');
+						clearCanvas();
+						drawText('Victory!', [315, 500], {
+							size: 100,
+							fill: LED_COLOR.green
+						});
+						sendCanvasImage();
+						MissionLink.unsync();
 					}
 					else{
-						alert('Strike X');
+						clearCanvas();
+						drawText('Strike X', [315, 500], {
+							size: 100,
+							fill: LED_COLOR.red
+						});
+						sendCanvasImage();
 					}
 				}
 
