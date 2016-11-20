@@ -8,6 +8,11 @@
 
 @Charcoal: #1a1a1a;
 
+@SpaceBlue: #1C344C;
+@ShipBlue: #287D7D;
+@PlanetGreen: #46B05B;
+@GasGreen: #C6E070;
+
 /*--------------------------------------------*/
 /*---> FONTS <--------------------------------*/
 /*--------------------------------------------*/
@@ -15,12 +20,18 @@
 @vh: 6.5px;
 @tx: 3.0 * @vh;
 
+.TitleFont(){
+	font-family: 'Bungee', sans-serif;
+}
+
 .HeadFont(){
-	font-family: 'Source Sans Pro', sans-serif;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 800;
 }
 
 .BodyFont(){
-	font-family: 'Source Sans Pro', sans-serif;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 400;
 }
 
 /*--------------------------------------------*/
@@ -29,28 +40,30 @@
 
 p, h1, h2, h3, ul, li{
 	.BodyFont();
-	margin: (0.5 * @tx) auto;
+	margin: (1.0 * @tx) auto;
 }
 
 h1, h2, h3{
 	.HeadFont();
 	text-align: center;
-	font-weight: 900;
 }
 
 h1{
 	font-size: 1.5 * @tx;
 	line-height: 1.75 * @tx;
+	.TitleFont();
 }
 
 h2{
 	font-size: 1.25 * @tx;
 	line-height: 1.5 * @tx;
+	color: @GasGreen;
 }
 
 h3{
 	font-size: 1.1 * @tx;
 	line-height: 1.35 * @tx;
+	color: @GasGreen;
 }
 
 p{
@@ -71,11 +84,11 @@ li{
 /*--------------------------------------------*/
 
 html{
-	background: white;
+	background: @SpaceBlue;
 	//Default Text Styles
 	.BodyFont();
 	font-size: @tx;
-	color: @Charcoal;
+	color: white;
 }
 
 body{
@@ -100,9 +113,39 @@ body{
 /*---> FORM <----------------------------------*/
 /*--------------------------------------------*/
 
-input, button, select{
+div.centerbox {
+	display: flex;
+	justify-content: center;
+	text-align: center;
+}
+
+input, button, select {
 	outline: none;
 	border: none;
+}
+
+button {
+
+	display: inline-block;
+	//margin: 10px auto;
+	margin: 10px;
+
+	width: 250px;
+	height: 50px;
+	line-height: 50px;
+	font-size: 20px;
+
+
+	.TitleFont();
+	background: @PlanetGreen;
+	color: white;
+
+
+	&:hover {
+		cursor: pointer;
+		background: lighten(@SpaceBlue, 10%);
+	}
+
 }
 
 /*--------------------------------------------*/

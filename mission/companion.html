@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpaceHacks</title>
+		<link rel="stylesheet" type="text/css" href="style/reset.css">
+		<link rel="stylesheet/less" type="text/css" href="style/companion.less">
+		<script type="text/javascript" src="lib/less.min.js"></script>
+		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
+		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.1/howler.min.js"></script>
+	</head>
+	<body>
+
+		<button id="left">Left</button>
+		<button id="right">Right</button>
+		<button id="check">Check</button>
+		<button id="view">View</button>
+
+		<script type="text/javascript" src="lib/infra.js"></script>
+		<script type="text/javascript" src="lib/main.js"></script>
+
+		<script type="text/javascript">
+
+			var QueryString = function () {
+				// This function is anonymous, is executed immediately and 
+				// the return value is assigned to QueryString!
+				var query_string = {};
+				var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i=0;i<vars.length;i++) {
+					var pair = vars[i].split("=");
+					// If first entry with this name
+					if (typeof query_string[pair[0]] === "undefined") {
+						query_string[pair[0]] = decodeURIComponent(pair[1]);
+						// If second entry with this name
+					} else if (typeof query_string[pair[0]] === "string") {
+						var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+						query_string[pair[0]] = arr;
+						// If third or later entry with this name
+					} else {
+						query_string[pair[0]].push(decodeURIComponent(pair[1]));
+					}
+				} 
+				return query_string;
+			}();
+
+			MissionLink.sync(QueryString.gid);
+
+			function ClickEvent(id, fn){
+				document.getElementById(id).addEventListener('click', function(e){fn(e)});
+			}
+
+			ClickEvent('left', function(e){
+				MissionLink._pushButton('alpha');
+			});
+
+			ClickEvent('check', function(e){
+				MissionLink._pushButton('beta');
+			});
+
+			ClickEvent('right', function(e){
+				MissionLink._pushButton('gamma');
+			});
+
+			ClickEvent('view', function(e){
+				MissionLink._pushButton('delta');
+			});
+
+			var buttonSound = new Howl({
+				src: ['./style/sound/digital_button.mp3']
+			});
+
+			function playSound(){
+				buttonSound.play();
+			}
+
+			MissionLink.alphaCallback = playSound;
+			MissionLink.betaCallback = playSound;
+			MissionLink.gammaCallback = playSound;
+			MissionLink.deltaCallback = playSound;
+
+		</script>
+		
+	</body>
+</html>
