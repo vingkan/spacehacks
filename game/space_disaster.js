@@ -201,7 +201,7 @@ function preloader_cb(percentage) {
 function load() {
     //m_data.load(APP_ASSETS_PATH + "space_disaster.json", load_cb, preloader_cb);
     m_data.load(APP_ASSETS_PATH + "Engine.json", load_cb, preloader_cb);
-    console.log("test-1:" + m_scs.can_select_objects());
+    //console.log("test-1:" + m_scs.can_select_objects());
     // if (!m_scs.can_select_objects()) {
     //     m_scs.can_select_objects() = function() {return true;}
     // }
@@ -246,7 +246,7 @@ function load_cb(data_id) {
 
 
     // Third way to split screen: m_hmd.enable_hmd
-    console.log("test0:" + m_scs.can_select_objects());
+    //console.log("test0:" + m_scs.can_select_objects());
     if (m_hmd.check_browser_support())
         register_hmd();
 
@@ -269,7 +269,15 @@ var init_screen = function() {
 
     var obj = m_scs.get_object_by_name("TV_R");
     var context = m_tex.get_canvas_ctx(obj, "Texture.001");
+
+    var readoutWindow = document.getElementById('readout');
+    getIframeWindow(readoutWindow).init(MissionLink.getRoomKey());
+    
+    var obj2 = m_scs.get_object_by_name("TV_L");
+    var context2 = m_tex.get_canvas_ctx(obj2, "Texture.002");
+
     var update_canvas = function() {
+
         db.ref(MissionLink.getRoomKey() + '/modules/circuits/data-uri').once('value', function(snap){
             var dataURI = snap.val();
             if(dataURI){
@@ -281,11 +289,27 @@ var init_screen = function() {
                 }
             }
         });
+
+        db.ref(MissionLink.getRoomKey() + '/modules/readout/data-uri').once('value', function(snap){
+            var dataURI = snap.val();
+            if(dataURI){
+                var imgObj = new Image();
+                imgObj.crossOrigin = 'anonymous';
+                imgObj.src = dataURI;
+                imgObj.onload = function(){
+                    context2.drawImage(imgObj, 0, 0, context2.canvas.width, context2.canvas.height);
+                }
+            }
+        });
+
+        m_tex.update_canvas_ctx(obj2, "Texture.002");
         m_tex.update_canvas_ctx(obj, "Texture.001");
         setTimeout(function() {update_canvas()}, TIME_DELAY);
+
     }
 
     update_canvas();
+
 }
 
 function register_gamepad(is_hmd) {
@@ -353,9 +377,9 @@ function register_gamepad(is_hmd) {
 
 function register_mouse(is_hmd) {
     console.log("register_mouse function");
-    console.log("test1:" + m_scs.can_select_objects());
+    //console.log("test1:" + m_scs.can_select_objects());
     if (!is_hmd) {
-        console.log("test2:" + m_scs.can_select_objects());
+        //console.log("test2:" + m_scs.can_select_objects());
         // use pointerlock
         /*var canvas_elem = m_cont.get_canvas();
         canvas_elem.addEventListener("mousedown", function(e) {
@@ -370,18 +394,19 @@ function register_mouse(is_hmd) {
     } 
     else {
         // TODO: add menu and use mouse sensors
-        console.log("test3:" + m_scs.can_select_objects());
+        //console.log("test3:" + m_scs.can_select_objects());
         var is_clicked = false;
 
         var container = m_cont.get_container();
         container.addEventListener("click", function(e) {
             // go to VR-mode in case of using HMD (WebVR API 1.0)
             m_input.request_fullscreen_hmd();
+            toggleFullScreen();
             // canvas_click
             is_clicked = true;
         });
 
-        console.log("test4:" + m_scs.can_select_objects());
+        //console.log("test4:" + m_scs.can_select_objects());
         var canvas_elem = document.getElementById('main_canvas_container');
         console.log("Getting: " + canvas_elem.height + " height, " +canvas_elem.width +" width");
 
@@ -567,6 +592,21 @@ function main_canvas_click(e) {
             MissionLink._pushButton(BUTTON_MAPPING[obj.name]);
         }
 
+    }
+}
+
+function toggleFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement;
+
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+    if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        requestFullScreen.call(docEl);
+    }
+    else {
+        cancelFullScreen.call(doc);
     }
 }
 

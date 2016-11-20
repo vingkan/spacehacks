@@ -16,8 +16,8 @@
 		<h1><span class="cursor">>: </span><span id="display">Messages will appear here.</span></h1>
 
 		<script type="text/javascript" src="lib/infra.js"></script>
-		<script type="text/javascript" src="lib/main.js"></script>
 		<script type="text/javascript" src="lib/transforms.js"></script>
+		<script type="text/javascript" src="lib/html2canvas.min.js"></script>
 
 		<script type="text/javascript">
 
@@ -42,6 +42,7 @@
 				function printMessage(msg){
 					originalMsg = msg;
 					display.innerText = transformMessage(msg);
+					sendCanvasImage();
 				}
 
 				var msgRef = db.ref(MissionLink.getRoomKey() + '/messages').orderByChild('timestamp').startAt(Date.now());
@@ -53,6 +54,17 @@
 				db.ref(MissionLink.getRoomKey() + '/readout').on('value', function(r){
 					printMessage(originalMsg);
 				});
+
+				function sendCanvasImage(){
+					html2canvas(window.parent.document.body, {
+						onrendered: function(canvas){
+							canvas.style.display = 'none';
+							document.body.appendChild(canvas);
+							var dataURI = canvas.toDataURL('image/png');
+							db.ref(MissionLink.getRoomKey() + '/modules/readout/data-uri').set(dataURI);
+						}
+					});
+				}
 
 			}
 
