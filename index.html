@@ -11,7 +11,7 @@
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
-	<body>
+	<body>`
 
 		<div id="fb-root"></div>
 		<script>(function(d, s, id) {
@@ -107,7 +107,7 @@
 					ClickEvent('send-controller', function(e){
 						FB.ui({
 							method: 'send',
-							name: 'SpaceHacks',
+							name: 'VR Controller',
 							link: window.location.origin + '/spacehacks/mission/companion.html?gid=' + window.ROOM_KEY
 						});
 					});
@@ -115,8 +115,8 @@
 					ClickEvent('send-game', function(e){
 						FB.ui({
 							method: 'send',
-							name: 'SpaceHacks',
-							link: window.location.origin + '/spacehacks/graphics/index.html?gid=' + window.ROOM_KEY
+							name: 'SpaceHacks Game',
+							link: window.location.origin + '/spacehacks/game/index.html?gid=' + window.ROOM_KEY
 						});
 					});
 
@@ -134,7 +134,7 @@
 					ClickEvent('send-terminal', function(e){
 						FB.ui({
 							method: 'send',
-							name: 'SpaceHacks',
+							name: 'SpaceHacks Terminal',
 							link: window.location.origin + '/spacehacks/mission/control.html?gid=' + window.ROOM_KEY
 						});
 					});
@@ -142,13 +142,13 @@
 					ClickEvent('send-controller2', function(e){
 						FB.ui({
 							method: 'send',
-							name: 'SpaceHacks',
+							name: 'VR Controller',
 							link: window.location.origin + '/spacehacks/mission/companion.html?gid=' + window.ROOM_KEY
 						});
 					});
 
 					ClickEvent('open-game', function(){
-						var controlWindow = window.open('graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+						var controlWindow = window.open('game/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
 					});
 
 				});
