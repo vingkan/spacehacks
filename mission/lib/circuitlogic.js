@@ -520,58 +520,13 @@ function generateChallenge() {
     return {original: solutionPair.original, options: options};
 }
 
-for (var i = 0; i < 100; i++) {
-    var solutionPair = generateSolutionPair();
-    if (!checkCircuit(solutionPair.original, solutionPair.answer)) {
-        console.log('FALSE');
-        renderCircuit(solutionPair.original);
-    }
-    if (i === 99) {
-        console.log('DONE');
-    }
-    // console.log(solutionPair);
-}
-// for (var i = 0; i < solutionPair.original.wires.length; i++) {
-//     console.log(solutionPair.original.wires[i]);
+// for (var i = 0; i < 100; i++) {
+//     var solutionPair = generateSolutionPair();
+//     if (!checkCircuit(solutionPair.original, solutionPair.answer)) {
+//         console.log('FALSE');
+//         renderCircuit(solutionPair.original);
+//     }
+//     if (i === 99) {
+//         console.log('DONE');
+//     }
 // }
-
-// var original = {
-// 	nodes: {
-// 		a: true,
-// 		b: true,
-// 		c: true,
-// 		d: true,
-// 		e: false
-// 	},
-// 	led: 'red',
-// 	wires: [
-// 		{node1: 'a', node2: 'c', broken: false},
-// 		{node1: 'c', node2: 'b', broken: false},
-//         {node1: 'a', node2: 'b', broken: false},
-//         {node1: 'a', node2: 'd', broken: false},
-//         {node1: 'b', node2: 'd', broken: false}
-// 	]
-// }
-//
-// var answer = {
-// 	nodes: {
-// 		a: true,
-// 		b: true,
-// 		c: true,
-// 		d: true,
-// 		e: false
-// 	},
-// 	led: 'red',
-// 	wires: [
-// 		{node1: 'a', node2: 'c', broken: false},
-// 		{node1: 'c', node2: 'b', broken: false},
-//         {node1: 'a', node2: 'b', broken: false},
-//         {node1: 'a', node2: 'd', broken: false},
-//         {node1: 'b', node2: 'd', broken: false}
-// 	]
-// }
-//
-// console.log(checkCircuit(original, answer));
-// renderCircuit(circuit);
-// var circuits = generateCircuits(circuit, 10);
-// console.log(circuits);
