@@ -6,7 +6,7 @@
 		<link rel="stylesheet/less" type="text/css" href="mission/style/main.less">
 		<script type="text/javascript" src="mission/lib/less.min.js"></script>
 		<!--<link rel="icon" type="img/png" href="style/favicon.png" style="width:30px;">-->
-		<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Bungee|Open+Sans:400,800" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.6.1/firebase.js"></script>
 	</head>
@@ -24,13 +24,14 @@
 		<h1>SpaceHacks</h1>
 		<h3>Your Game ID: <span id="gid">...</span></h3>
 
-		<button id="launch" onclick="launchGame();">Launch Game</button>
-
-		<h2>Choose Your</h2>
+		<h1>Choose Your Role</h1>
 
 		<h3>VR Companion Controller</h3>
 
-		<button id="companion">Go</button>
+		<div class="centerbox">
+			<button id="engineering">Engineering</button>
+			<button id="control">Mission Control</button>
+		</div>
 		
 		
 		<h3>Mission Control Manual</h3>
@@ -43,22 +44,31 @@
 
 			window.ROOM_KEY = false;
 
+			function ClickEvent(id, fn){
+				document.getElementById(id).addEventListener('click', function(e){fn(e)});
+			}
+
 			function main(){
 				var promise = db.ref('games').push({timestamp: Date.now()});
 				promise.then(function(data){
 
 					//window.ROOM_KEY = promise.path['o'][1];
 					window.ROOM_KEY = 'vinesh';
-					//var gameWindow = window.open('graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
-					/*gameWindow.initGame(window.ROOM_KEY);
-					console.log(gameWindow)*/
+					/*var gameWindow = window.open('graphics/index.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+					console.log(gameWindow)
+					gameWindow.initGame(window.ROOM_KEY);*/
+					
 
 					document.getElementById('gid').innerText = window.ROOM_KEY;
+
+					ClickEvent('control', function(){
+						var controlWindow = window.open('mission/control.html?gid=' + window.ROOM_KEY, 'SpaceHacks');
+					});
 
 					var game_url = window.location.origin + '/graphics/index.html?gid=' + window.ROOM_KEY;
 					console.log(game_url)
 
-					var companion = document.getElementById('companion');
+					var companion = document.getElementById('engineering');
 					companion.addEventListener('click', function(e){
 						FB.ui({
 							method: 'send',
